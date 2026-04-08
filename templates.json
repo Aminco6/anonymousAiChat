@@ -1,0 +1,58 @@
+[
+  {
+    "id": "1",
+    "title": "Someone secretly likes you 👀",
+    "message": "Hey... I wasn't going to say anything, but I couldn't stop thinking about it. Someone out there is watching you — in the best way possible. They notice the little things you do, and it makes their day brighter just seeing you smile. Just thought you should know.",
+    "emoji": "👀",
+    "from": "Your Secret Admirer"
+  },
+  {
+    "id": "2",
+    "title": "A message from your future self 🌟",
+    "message": "It's me — you, from the future. I just wanted to come back and tell you: it all works out. That thing you're worried about right now? It doesn't define you. You figured everything out. You made it through. Keep going — future you is so proud of you.",
+    "emoji": "🌟",
+    "from": "Future You"
+  },
+  {
+    "id": "3",
+    "title": "Someone noticed your smile today ☀️",
+    "message": "You probably didn't even notice, but your smile today lit up the whole room. Someone saw it and couldn't look away. They're too shy to say it out loud, but they wanted you to know: you made the world a little more beautiful today.",
+    "emoji": "☀️",
+    "from": "A Silent Observer"
+  },
+  {
+    "id": "4",
+    "title": "You are deeply appreciated 💜",
+    "message": "There's someone who thinks about you more than you know. They see the effort you put in, even when no one else does. They appreciate your kindness, your patience, and the quiet ways you make life better for the people around you. Thank you for being exactly who you are.",
+    "emoji": "💜",
+    "from": "Someone Who Cares"
+  },
+  {
+    "id": "5",
+    "title": "A stranger wishes you well 🌈",
+    "message": "I don't know you. We may have passed each other or never met at all. But somewhere in this world, a stranger is sending you good vibes and the hope that today is a little kinder to you than yesterday. You deserve every good thing coming your way.",
+    "emoji": "🌈",
+    "from": "A Friendly Stranger"
+  },
+  {
+    "id": "6",
+    "title": "You're stronger than you think 💪",
+    "message": "Life has thrown a lot at you lately. I see it. And I want you to know — you've handled every single thing with more grace than you realize. You're still standing. That means everything. The best chapters of your story are still being written.",
+    "emoji": "💪",
+    "from": "Your Biggest Fan"
+  },
+  {
+    "id": "7",
+    "title": "Someone misses you deeply 🥺",
+    "message": "They haven't said it. Maybe they don't know how. But there's someone who thinks of you out of nowhere — when a song plays, when they pass a familiar place, when something reminds them of you. They miss you. More than they'll ever say out loud.",
+    "emoji": "🥺",
+    "from": "Someone Missing You"
+  },
+  {
+    "id": "8",
+    "title": "The universe has a plan for you ✨",
+    "message": "Not everything makes sense right now, and that's okay. The universe is working on something for you — quietly, behind the scenes. Trust the delay. Trust the detour. What's meant for you is already in motion. Stay open. Stay ready. It's coming.",
+    "emoji": "✨",
+    "from": "The Universe"
+  }
+]

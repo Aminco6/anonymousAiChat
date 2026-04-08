@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Send anonymous secret messages that reveal like a chatbot. Share via QR code or link." />
+  <meta property="og:title" content="Anonymous AI Messenger — Secret Messages" />
+  <meta property="og:description" content="Someone left you a secret message. Create & share anonymous messages that reveal with typing animation." />
+  <meta property="og:type" content="website" />
+  <title>Anonymous AI Messenger 🤫</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Google Analytics 4 — Replace G-XXXXXXXXXX with your Measurement ID -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+</head>
+<body>
+
+  <!-- ===========================
+       GOOGLE ADSENSE TOP BANNER
+       Replace data-ad-client and data-ad-slot with your AdSense values
+       =========================== -->
+  <div class="ad-banner" style="padding-top:72px;">
+    <span style="opacity:0.4; font-size:0.7rem;">Advertisement</span>
+  </div>
+
+  <!-- ===========================
+       NAVBAR
+       =========================== -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <span>🤫</span> AnonMsg
+    </a>
+    <button class="nav-cta" data-scroll-creator>Create Message</button>
+  </nav>
+
+  <!-- ===========================
+       LANDING PAGE
+       =========================== -->
+  <div id="landing">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-glow"></div>
+      <div class="hero-glow-2"></div>
+
+      <div class="hero-badge">
+        ✨ Anonymous &amp; Private — No Sign Up Needed
+      </div>
+
+      <h1>
+        Someone left you<br/>a <em>secret message</em>
+      </h1>
+
+      <p>
+        Create anonymous messages that reveal like a chat conversation.
+        Share via QR code or link — no account, no tracking, just vibes.
+      </p>
+
+      <div class="hero-btns">
+        <button class="btn-primary" data-scroll-creator>
+          ✨ Create a Message
+        </button>
+        <a href="#templates" class="btn-secondary">
+          👀 Browse Templates
+        </a>
+      </div>
+
+      <!-- Floating preview -->
+      <div class="hero-preview">
+        <div class="preview-header">
+          <div class="preview-avatar">🤖</div>
+          <div class="preview-info">
+            <div class="name">AnonymousAI</div>
+            <div class="status">● Typing...</div>
+          </div>
+        </div>
+        <div class="preview-chat">
+          <div class="preview-bubble">
+            Hey! 👋 Someone asked me to deliver something to you...
+          </div>
+          <div class="preview-typing">
+            <span></span><span></span><span></span>
+          </div>
+          <div class="preview-bubble">
+            They said they really appreciate you 💜
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS BAR -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <div class="num" id="msg-count">14,837+</div>
+        <div class="label">Messages Delivered</div>
+      </div>
+      <div class="stat-item">
+        <div class="num">100%</div>
+        <div class="label">Anonymous</div>
+      </div>
+      <div class="stat-item">
+        <div class="num">Free</div>
+        <div class="label">Always</div>
+      </div>
+    </div>
+
+    <!-- === AD BETWEEN HERO & CREATOR === -->
+    <div class="ad-section-wrap">
+      <div class="ad-mid">
+        <span>Ad Placeholder — Mid Section</span>
+      </div>
+    </div>
+
+    <!-- ===========================
+         MESSAGE CREATOR
+         =========================== -->
+    <section id="creator">
+      <div class="section-label">✦ Create</div>
+      <h2 class="section-title">Craft your secret message</h2>
+      <p class="section-sub">Write your message, pick a style, and generate a link or QR code to share.</p>
+
+      <div class="creator-grid">
+        <!-- FORM -->
+        <div class="creator-form-card">
+          <div class="form-group">
+            <label for="msg-text">Your Secret Message *</label>
+            <textarea id="msg-text" placeholder="Write what's in your heart... (e.g. 'I noticed your smile today and it made my whole day better ☀️')"></textarea>
+            <div class="char-count"><span id="char-count">0</span>/400</div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="msg-from">Sender Nickname (optional)</label>
+              <input type="text" id="msg-from" placeholder="e.g. Secret Admirer" maxlength="40" />
+            </div>
+            <div class="form-group">
+              <label for="msg-emoji">Vibe Emoji (optional)</label>
+              <input type="text" id="msg-emoji" placeholder="e.g. 💌" maxlength="4" />
+            </div>
+          </div>
+
+          <!-- Quick emoji picker -->
+          <div style="margin-bottom:20px;">
+            <label style="display:block;font-size:0.82rem;font-weight:500;color:var(--subtext);margin-bottom:8px;">Quick Pick</label>
+            <div id="emoji-quick" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="msg-audio">Background Audio URL (optional)</label>
+            <input type="url" id="msg-audio" placeholder="https://... (mp3 link)" />
+          </div>
+
+          <button class="btn-generate" id="generate-btn">
+            ✨ Generate Secret Link &amp; QR
+          </button>
+        </div>
+
+        <!-- RESULT CARD -->
+        <div class="result-card" id="result-card">
+          <div class="section-label" style="margin-bottom:16px;">🎉 Your message is ready!</div>
+
+          <!-- QR Code -->
+          <div class="qr-wrap">
+            <div id="qrcode"></div>
+          </div>
+
+          <!-- Share Link -->
+          <div class="result-link" id="share-link" title="Click to copy">
+            <span>Your link will appear here...</span>
+            <div class="copy-badge">Copied!</div>
+          </div>
+
+          <!-- Share Buttons -->
+          <div class="share-grid">
+            <a id="share-wa" href="#" target="_blank" rel="noopener" class="share-btn whatsapp">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.890-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+              WhatsApp
+            </a>
+            <a id="share-fb" href="#" target="_blank" rel="noopener" class="share-btn facebook">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              Facebook
+            </a>
+            <a id="share-tw" href="#" target="_blank" rel="noopener" class="share-btn twitter">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Twitter / X
+            </a>
+            <button id="share-copy" class="share-btn copy">
+              🔗 Copy Link
+            </button>
+          </div>
+
+          <button class="btn-download-qr" id="download-qr">
+            ⬇ Download QR Code
+          </button>
+
+          <!-- Post-reveal ad placeholder -->
+          <div class="ad-mid" style="margin:16px 0 0; min-height:60px;">
+            <span>Ad Placeholder — After Creation</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- === AD BETWEEN CREATOR & TEMPLATES === -->
+    <div class="ad-section-wrap">
+      <div class="ad-mid">
+        <span>Ad Placeholder — Between Sections</span>
+      </div>
+    </div>
+
+    <!-- ===========================
+         READY-MADE TEMPLATES
+         =========================== -->
+    <section id="templates">
+      <div class="section-label">✦ Templates</div>
+      <h2 class="section-title">Ready-made secret messages</h2>
+      <p class="section-sub">Pick a pre-written message, share the QR, and let the magic happen.</p>
+
+      <div class="templates-grid" id="templates-grid">
+        <div class="template-card" style="padding:40px;text-align:center;color:var(--muted);">Loading...</div>
+      </div>
+    </section>
+
+    <!-- ===========================
+         CALL TO ACTION
+         =========================== -->
+    <div class="cta-section">
+      <div class="cta-bg"></div>
+      <h2>Start the viral loop 😏</h2>
+      <p>Every person who opens a message sees the option to send their own.<br/>One share becomes many.</p>
+      <button class="btn-primary" data-scroll-creator>
+        ✨ Send Your First Message
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <p>
+        Made with 💜 · Anonymous AI Messenger ·
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub Pages</a> ·
+        No data stored. No sign-up. Ever.
+      </p>
+    </footer>
+
+  </div><!-- end #landing -->
+
+  <!-- ===========================
+       CHAT OVERLAY
+       (Shown when URL has #msg= hash)
+       =========================== -->
+  <div id="chat-overlay">
+
+    <!-- Splash screen -->
+    <div id="chat-splash" class="chat-splash">
+      <div class="splash-icon">🤫</div>
+      <div class="splash-text">Someone left you a secret message</div>
+      <div class="splash-sub">Decrypting...</div>
+      <div class="splash-loader">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <!-- Chat Header -->
+    <div class="chat-header">
+      <button class="chat-back" id="chat-back" title="Back to home">
+        ← 
+      </button>
+      <div class="chat-avatar">🤖</div>
+      <div class="chat-meta">
+        <div class="chat-name">AnonymousAI</div>
+        <div class="chat-status">● Online</div>
+      </div>
+    </div>
+
+    <!-- Messages Area -->
+    <div class="chat-messages" id="chat-messages">
+      <!-- Messages injected by script.js -->
+    </div>
+
+    <!-- Post-reveal ad (inside chat) -->
+    <div id="chat-ad" style="display:none; padding:8px 16px;">
+      <div class="ad-mid" style="margin:0; min-height:50px;">
+        <span>Ad Placeholder — After Reveal</span>
+      </div>
+    </div>
+
+    <!-- Decorative input bar -->
+    <div class="chat-input-bar">
+      <div class="chat-input-fake">Type a message...</div>
+      <button class="chat-send-btn" onclick="goToCreator()">✨</button>
+    </div>
+
+  </div>
+
+  <!-- QR Code Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <!-- Main Script -->
+  <script src="script.js"></script>
+
+</body>
+</html>
