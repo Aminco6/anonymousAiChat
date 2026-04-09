@@ -32,25 +32,20 @@
 
   <!-- ===========================
        GOOGLE ADSENSE TOP BANNER
-       Replace data-ad-client and data-ad-slot with your AdSense values
        =========================== -->
-
-
-  
   <div class="ad-banner" style="padding-top:72px;">
-    <span style="opacity:0.4; font-size:0.7rem;"><script>
-  atOptions = {
-    'key' : '21534e0ec2e9a68a6dc1e4cf34fd41cf',
-    'format' : 'iframe',
-    'height' : 50,
-    'width' : 320,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/21534e0ec2e9a68a6dc1e4cf34fd41cf/invoke.js"></script>
-
-
-</span>
+    <span style="opacity:0.4; font-size:0.7rem;">
+      <script>
+        atOptions = {
+          'key' : '21534e0ec2e9a68a6dc1e4cf34fd41cf',
+          'format' : 'iframe',
+          'height' : 50,
+          'width' : 320,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.highperformanceformat.com/21534e0ec2e9a68a6dc1e4cf34fd41cf/invoke.js"></script>
+    </span>
   </div>
 
   <!-- ===========================
@@ -137,17 +132,18 @@
     <!-- === AD BETWEEN HERO & CREATOR === -->
     <div class="ad-section-wrap">
       <div class="ad-mid">
-        <span><script>
-  atOptions = {
-    'key' : 'dbe6036bd80e3dfe046a425d4d696d04',
-    'format' : 'iframe',
-    'height' : 300,
-    'width' : 160,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/dbe6036bd80e3dfe046a425d4d696d04/invoke.js"></script>
-</span>
+        <span>
+          <script>
+            atOptions = {
+              'key' : 'dbe6036bd80e3dfe046a425d4d696d04',
+              'format' : 'iframe',
+              'height' : 300,
+              'width' : 160,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highperformanceformat.com/dbe6036bd80e3dfe046a425d4d696d04/invoke.js"></script>
+        </span>
       </div>
     </div>
 
@@ -157,21 +153,51 @@
     <section id="creator">
       <div class="section-label">✦ Create</div>
       <h2 class="section-title">Craft your secret message</h2>
-      <p class="section-sub">Write your message, pick a style, and generate a link or QR code to share.</p>
+      <p class="section-sub">Write an anonymous message and it will be delivered privately to their Telegram. They'll never know it's from you.</p>
 
       <div class="creator-grid">
         <!-- FORM -->
         <div class="creator-form-card">
+          
+          <!-- Telegram Delivery Info Box -->
+          <div style="background: linear-gradient(135deg, rgba(192,132,252,0.1), rgba(129,140,248,0.1)); border-radius: 16px; padding: 16px; margin-bottom: 24px; border: 1px solid rgba(192,132,252,0.2);">
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 12px;">
+              <span style="font-size: 28px;">🤫</span>
+              <div>
+                <div style="font-weight: 700; font-size: 1rem;">Two-Way Anonymous Messaging</div>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">Powered by Telegram</div>
+              </div>
+            </div>
+            <p style="font-size: 0.85rem; margin-bottom: 8px;">✨ Your message will be delivered anonymously to their Telegram. If they reply, you'll get their response here — completely anonymous!</p>
+            <p style="font-size: 0.75rem; color: #10b981;">🔒 100% Anonymous — No one ever knows who sent what</p>
+          </div>
+
           <div class="form-group">
             <label for="msg-text">Your Secret Message *</label>
             <textarea id="msg-text" placeholder="Write what's in your heart... (e.g. 'I noticed your smile today and it made my whole day better ☀️')"></textarea>
             <div class="char-count"><span id="char-count">0</span>/400</div>
           </div>
 
+          <!-- Telegram Recipient Field - NEW -->
+          <div class="form-group">
+            <label for="telegram-recipient">📱 Recipient's Telegram Username *</label>
+            <input type="text" id="telegram-recipient" placeholder="@username or telegram username" maxlength="50" />
+            <small style="font-size:0.7rem;color:var(--muted);">
+              Your message will be delivered anonymously to their Telegram. They can reply and you'll get it here.
+            </small>
+          </div>
+
+          <div class="form-group">
+            <label for="recipient-name">Recipient's Name (Optional)</label>
+            <input type="text" id="recipient-name" placeholder="e.g., John, Sis, Mom" maxlength="50" />
+            <small style="font-size:0.7rem;">Chat will be personalized with their name</small>
+          </div>
+
           <div class="form-row">
             <div class="form-group">
-              <label for="msg-from">Sender Nickname (optional)</label>
+              <label for="msg-from">Your Sender Name (Optional - stays anonymous)</label>
               <input type="text" id="msg-from" placeholder="e.g. Secret Admirer" maxlength="40" />
+              <small style="font-size:0.65rem;">This name appears in the message (still anonymous)</small>
             </div>
             <div class="form-group">
               <label for="msg-emoji">Vibe Emoji (optional)</label>
@@ -179,20 +205,37 @@
             </div>
           </div>
 
+          <!-- Category Selection -->
+          <div class="form-group">
+            <label for="msg-category">📂 Message Category (Optional)</label>
+            <select id="msg-category" class="input-field">
+              <option value="">-- Select a category for special teasers --</option>
+              <option value="birthday">🎂 Birthday</option>
+              <option value="love_romance">❤️ Love & Romance</option>
+              <option value="adult_humor">🔥 Adult Humor</option>
+              <option value="flirty">💋 Flirty</option>
+              <option value="wedding">💍 Wedding</option>
+              <option value="relationship">🤝 Relationship</option>
+              <option value="sympathy">😢 Sympathy</option>
+              <option value="fun">😂 Fun</option>
+              <option value="holidays">🎄 Holidays</option>
+              <option value="islamic">🌙 Islamic</option>
+              <option value="nigeria">🇳🇬 Nigeria</option>
+            </select>
+          </div>
+
           <!-- Quick emoji picker -->
           <div style="margin-bottom:20px;">
-            <label style="display:block;font-size:0.82rem;font-weight:500;color:var(--subtext);margin-bottom:8px;">Quick Pick</label>
+            <label style="display:block;font-size:0.82rem;font-weight:500;color:var(--subtext);margin-bottom:8px;">Quick Pick Emojis</label>
             <div id="emoji-quick" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
           </div>
 
-          <div class="form-group">
-            <label for="msg-audio">Background Audio URL (optional)</label>
-            <input type="url" id="msg-audio" placeholder="https://... (mp3 link)" />
-          </div>
-
           <button class="btn-generate" id="generate-btn">
-            ✨ Generate Secret Link &amp; QR
+            ✨ Send Anonymous Telegram Message
           </button>
+
+          <!-- Delivery Status -->
+          <div id="delivery-status" style="margin-top: 16px; padding: 12px; border-radius: 12px; display: none; font-size: 0.85rem;"></div>
         </div>
 
         <!-- RESULT CARD -->
@@ -235,17 +278,18 @@
 
           <!-- Post-reveal ad placeholder -->
           <div class="ad-mid" style="margin:16px 0 0; min-height:60px;">
-            <span><script>
-  atOptions = {
-    'key' : '6031ebfe9c561f32127160feddc7f366',
-    'format' : 'iframe',
-    'height' : 90,
-    'width' : 728,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/6031ebfe9c561f32127160feddc7f366/invoke.js"></script>
-</span>
+            <span>
+              <script>
+                atOptions = {
+                  'key' : '6031ebfe9c561f32127160feddc7f366',
+                  'format' : 'iframe',
+                  'height' : 90,
+                  'width' : 728,
+                  'params' : {}
+                };
+              </script>
+              <script src="https://www.highperformanceformat.com/6031ebfe9c561f32127160feddc7f366/invoke.js"></script>
+            </span>
           </div>
         </div>
       </div>
@@ -254,17 +298,18 @@
     <!-- === AD BETWEEN CREATOR & TEMPLATES === -->
     <div class="ad-section-wrap">
       <div class="ad-mid">
-        <span><script>
-  atOptions = {
-    'key' : '460a91006e51a5726b6dfcb128a53974',
-    'format' : 'iframe',
-    'height' : 250,
-    'width' : 300,
-    'params' : {}
-  };
-</script>
-<script src="https://www.highperformanceformat.com/460a91006e51a5726b6dfcb128a53974/invoke.js"></script>
-</span>
+        <span>
+          <script>
+            atOptions = {
+              'key' : '460a91006e51a5726b6dfcb128a53974',
+              'format' : 'iframe',
+              'height' : 250,
+              'width' : 300,
+              'params' : {}
+            };
+          </script>
+          <script src="https://www.highperformanceformat.com/460a91006e51a5726b6dfcb128a53974/invoke.js"></script>
+        </span>
       </div>
     </div>
 
@@ -277,7 +322,7 @@
       <p class="section-sub">Pick a pre-written message, share the QR, and let the magic happen.</p>
 
       <div class="templates-grid" id="templates-grid">
-        <div class="template-card" style="padding:40px;text-align:center;color:var(--muted);">Loading...</div>
+        <div class="template-card" style="padding:40px;text-align:center;color:var(--muted);">Loading amazing templates...</div>
       </div>
     </section>
 
@@ -296,8 +341,8 @@
     <!-- Footer -->
     <footer>
       <p>
-        Made with 💜 · Anonymouse AI Messenger ·
-        <a href="" target="_blank" rel="noopener">Anonymouse Ai</a> ·
+        Made with 💜 · Anonymous AI Messenger ·
+        <a href="#" target="_blank" rel="noopener">Anonymous AI</a> ·
         No data stored. No sign-up. Ever.
       </p>
     </footer>
@@ -357,7 +402,7 @@
   
   <!-- Main Script -->
   <script src="script.js"></script>
-<script src="https://pl29101091.profitablecpmratenetwork.com/92/34/e7/9234e72f5dc15fac815f51990fdce390.js"></script>
+  <script src="https://pl29101091.profitablecpmratenetwork.com/92/34/e7/9234e72f5dc15fac815f51990fdce390.js"></script>
 
 </body>
 </html>
