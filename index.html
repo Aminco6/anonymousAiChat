@@ -174,13 +174,17 @@
           </div>
 
           <!-- Telegram Recipient Field - NEW -->
-          <div class="form-group">
-            <label for="telegram-recipient">📱 Recipient's Telegram Username *</label>
-            <input type="text" id="telegram-recipient" placeholder="@username or telegram username" maxlength="50" />
-            <small style="font-size:0.7rem;color:var(--muted);">
-              Your message will be delivered anonymously to their Telegram. They can reply and you'll get it here.
-            </small>
-          </div>
+  <div class="form-group">
+  <label for="telegram-recipient">📱 Recipient's Telegram Username *</label>
+  <input type="text" id="telegram-recipient" placeholder="@username" />
+  <small>They'll receive a button to tap and reveal your message instantly!</small>
+</div>
+
+<div class="form-group">
+  <label for="sender-telegram">📱 Your Telegram (optional - to receive replies)</label>
+  <input type="text" id="sender-telegram" placeholder="@username" />
+  <small>If they reply, you'll get it here anonymously</small>
+</div>
 
           <div class="form-group">
             <label for="recipient-name">Recipient's Name (Optional)</label>
@@ -225,17 +229,7 @@
             <div id="emoji-quick" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
           </div>
           
-         <div class="form-group">
-  <label for="telegram-recipient">📱 Recipient's Telegram Username *</label>
-  <input type="text" id="telegram-recipient" placeholder="@username" />
-  <small>They'll receive a button to tap and reveal your message instantly!</small>
-</div>
-
-<div class="form-group">
-  <label for="sender-telegram">📱 Your Telegram (optional - to receive replies)</label>
-  <input type="text" id="sender-telegram" placeholder="@username" />
-  <small>If they reply, you'll get it here anonymously</small>
-</div>
+       
           
 
           <button class="btn-generate" id="generate-btn">
