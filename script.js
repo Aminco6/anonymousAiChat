@@ -644,6 +644,9 @@ function splitMessageIntoLines(message) {
   return lines.filter(line => line.trim().length > 0).map(line => line.trim());
 }
 
+
+
+
 async function startChatSequence(params) {
   const splash = document.getElementById('chat-splash');
   const messagesEl = document.getElementById('chat-messages');
@@ -701,17 +704,71 @@ async function startChatSequence(params) {
   appendBubble(messagesEl, 'in', "⏰ The moment has arrived...", "⏰");
   await sleep(1500);
   
-  // Reveal message line by line
+  // ========== SCRATCH CARD ==========
   await showTyping(messagesEl, 1200);
-  appendBubble(messagesEl, 'in', "✨ Here's their message to you... ✨", "✨");
+  appendBubble(messagesEl, 'in', "✨ Their message is hidden below. Scratch to reveal it... ✨", "✨");
   await sleep(1000);
   
-  const lines = splitMessageIntoLines(messageText);
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    await showTyping(messagesEl, 800 + line.length * 20);
-    appendBubble(messagesEl, 'in', line, messageLogo, true);
-    await sleep(500);
+  const scratchId = Date.now().toString();
+  const scratchHtml = createScratchCard(scratchId);
+  appendHtmlBubble(messagesEl, 'in', scratchHtml, "🎫");
+  
+  await sleep(500);
+  
+  // Wait for scratch completion
+  await new Promise((resolve) => {
+    let resolved = false;
+    const checkInterval = setInterval(() => {
+      const contentDiv = document.getElementById(`scratch-content-${scratchId}`);
+      if (contentDiv && contentDiv.style.display === 'block' && !resolved) {
+        resolved = true;
+        clearInterval(checkInterval);
+        resolve();
+      }
+    }, 500);
+    setTimeout(() => {
+      if (!resolved) {
+        clearInterval(checkInterval);
+        resolve();
+      }
+    }, 30000);
+  });
+  
+  // ========== REVEAL MESSAGE LINE BY LINE AFTER SCRATCH ==========
+  const contentDiv = document.getElementById(`scratch-content-${scratchId}`);
+  if (contentDiv) {
+    contentDiv.innerHTML = '<div class="scratch-loading">✨ Revealing your message... ✨</div>';
+    await sleep(800);
+    
+    contentDiv.innerHTML = '<div class="line-reveal-container" id="line-reveal-container"></div>';
+    const revealContainer = contentDiv.querySelector('.line-reveal-container');
+    
+    // Split message into lines (by periods, line breaks, etc.)
+    const lines = splitMessageIntoLines(messageText);
+    
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const lineDiv = document.createElement('div');
+      lineDiv.className = 'reveal-line';
+      lineDiv.style.opacity = '0';
+      lineDiv.style.transform = 'translateY(10px)';
+      lineDiv.style.transition = 'all 0.3s ease';
+      lineDiv.innerHTML = `<span class="reveal-emoji">${messageLogo}</span> <span class="reveal-text">${escapeHtml(line)}</span>`;
+      revealContainer.appendChild(lineDiv);
+      
+      // Animate in
+      setTimeout(() => {
+        lineDiv.style.opacity = '1';
+        lineDiv.style.transform = 'translateY(0)';
+      }, 100);
+      
+      // Scroll to show new line
+      revealContainer.scrollTop = revealContainer.scrollHeight;
+      
+      // Delay between lines based on length (more suspense!)
+      const delay = Math.min(800 + line.length * 20, 2000);
+      await sleep(delay);
+    }
   }
   
   await sleep(1000);
@@ -751,322 +808,147 @@ async function startChatSequence(params) {
   incrementCount();
 }
 
-async function sendReplyFromChat(messageId) {
-  const replyMessage = document.getElementById('reply-message')?.value.trim();
-  const replierName = document.getElementById('reply-name')?.value.trim();
-  
-  if (!replyMessage) {
-    showToast('Please write a reply', true);
-    return;
-  }
-  
-  const success = await sendReply(messageId, replyMessage, replierName);
-  if (success) {
-    document.getElementById('reply-message').value = '';
-    document.getElementById('reply-name').value = '';
-    showToast('✅ Reply sent to the group anonymously!');
-  }
-}
-
-function appendDateDivider(container, text) {
-  const div = document.createElement('div');
-  div.className = 'msg-date-divider';
-  div.textContent = text;
-  container.appendChild(div);
-}
-
-function appendBubble(container, direction, text, avatarEmoji, isMain = false) {
-  const wrap = document.createElement('div');
-  wrap.className = `msg-wrap ${direction}`;
-  const time = getTime();
-
-  if (direction === 'in') {
-    wrap.innerHTML = `
-      <div class="msg-avatar-sm">${escapeHtml(avatarEmoji || '🤖')}</div>
-      <div class="bubble in${isMain ? ' main-msg' : ''}">
-        ${escapeHtml(text)}
-        <div class="time">${time}</div>
+// Scratch card generator
+function createScratchCard(id) {
+  return `
+    <div class="scratch-container" id="scratch-container-${id}">
+      <div class="scratch-label">✨ SCRATCH TO REVEAL ✨</div>
+      <div class="scratch-area">
+        <canvas id="scratch-canvas-${id}" width="280" height="100" class="scratch-canvas"></canvas>
+        <div class="scratch-overlay">← Scratch Here →</div>
       </div>
-    `;
-  } else {
-    wrap.innerHTML = `
-      <div class="bubble out">
-        ${escapeHtml(text)}
-        <div class="time">${time} ✓✓</div>
-      </div>
-    `;
-  }
-  container.appendChild(wrap);
-  container.scrollTop = container.scrollHeight;
-}
-
-async function showTyping(container, duration) {
-  const wrap = document.createElement('div');
-  wrap.className = 'typing-indicator';
-  wrap.id = 'typing-wrap';
-  wrap.innerHTML = `
-    <div class="msg-avatar-sm">🤖</div>
-    <div class="typing-bubble">
-      <span></span><span></span><span></span>
+      <div id="scratch-content-${id}" class="scratch-content" style="display: none;"></div>
     </div>
   `;
-  container.appendChild(wrap);
-  container.scrollTop = container.scrollHeight;
-  await sleep(duration);
-  const existing = document.getElementById('typing-wrap');
-  if (existing) existing.remove();
 }
 
-function goToCreator() {
-  closeChat();
-  setTimeout(() => {
-    const creator = document.getElementById('creator');
-    if (creator) creator.scrollIntoView({ behavior: 'smooth' });
-  }, 300);
-}
-
-// =====================
-// INITIALIZATION
-// =====================
-function initEmojiPicker() {
-  const emojis = ['💌', '💜', '❤️', '🔥', '👀', '🌹', '✨', '🥺', '😍', '🫶', '😘', '💋', '🎂', '🎉', '🌟'];
-  const container = document.getElementById('emoji-quick');
-  if (!container) return;
+// Initialize scratch card
+function initScratchCard(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
   
-  emojis.forEach(em => {
-    const btn = document.createElement('button');
-    btn.type = 'button';
-    btn.textContent = em;
-    btn.className = 'emoji-pick-btn';
-    btn.addEventListener('click', () => {
-      const input = document.getElementById('msg-emoji');
-      if (input) input.value = em;
-    });
-    container.appendChild(btn);
-  });
-}
-
-function initScrollAnimations() {
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.style.animation = 'fade-up 0.6s ease both';
-        observer.unobserve(entry.target);
+  const ctx = canvas.getContext('2d');
+  const container = canvas.closest('.scratch-container');
+  const contentDiv = container?.querySelector(`[id^="scratch-content"]`);
+  let isDragging = false;
+  let isRevealed = false;
+  let scratchCount = 0;
+  
+  // Draw scratch layer
+  ctx.fillStyle = '#888';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  // Add pattern
+  ctx.fillStyle = '#666';
+  for (let i = 0; i < 300; i++) {
+    ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
+  }
+  
+  // Draw text
+  ctx.fillStyle = '#c084fc';
+  ctx.font = 'bold 14px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('← SCRATCH →', canvas.width/2, canvas.height/2);
+  
+  function getCoords(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    let clientX, clientY;
+    if (e.touches) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+    
+    return {
+      x: Math.max(0, Math.min(canvas.width, (clientX - rect.left) * scaleX)),
+      y: Math.max(0, Math.min(canvas.height, (clientY - rect.top) * scaleY))
+    };
+  }
+  
+  function scratch(e) {
+    if (!isDragging || isRevealed) return;
+    e.preventDefault();
+    
+    const { x, y } = getCoords(e);
+    
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x, y, 12, 0, Math.PI * 2);
+    ctx.fill();
+    
+    scratchCount++;
+    
+    // Reveal after enough scratching
+    if (!isRevealed && scratchCount > 30) {
+      const imageData = ctx.getImageData(canvas.width/2, canvas.height/2, 1, 1);
+      if (imageData.data[3] === 0) {
+        isRevealed = true;
+        canvas.style.display = 'none';
+        const overlay = container?.querySelector('.scratch-overlay');
+        if (overlay) overlay.style.display = 'none';
+        
+        if (contentDiv) {
+          contentDiv.style.display = 'block';
+        }
       }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.template-card, .creator-form-card, .result-card').forEach(el => observer.observe(el));
-}
-
-function scrollToCreator() {
-  const el = document.getElementById('creator');
-  if (el) el.scrollIntoView({ behavior: 'smooth' });
-}
-
-function animateCounter() {
-  const el = document.getElementById('msg-count');
-  if (!el) return;
-  const target = getCount();
-  let current = Math.max(COUNTER_SEED, target - 100);
-  const step = Math.ceil(100 / 40);
-  const timer = setInterval(() => {
-    current = Math.min(current + step, target);
-    el.textContent = current.toLocaleString() + '+';
-    if (current >= target) clearInterval(timer);
-  }, 20);
-}
-
-// Make functions global
-window.useTemplate = useTemplate;
-window.scrollToCreator = scrollToCreator;
-window.sendReplyFromChat = sendReplyFromChat;
-window.closeChat = closeChat;
-window.goToCreator = goToCreator;
-
-document.addEventListener('DOMContentLoaded', async () => {
-  console.log('DOM loaded, initializing Group Messenger...');
+    }
+  }
   
-  checkAndLoadChat();
-  updateCounterDisplay();
-  initCreator();
-  loadTemplates();
-  initScrollAnimations();
-  initEmojiPicker();
-  initCategoryDropdown();
-  
-  document.querySelectorAll('[data-scroll-creator]').forEach(btn => {
-    btn.addEventListener('click', scrollToCreator);
+  canvas.addEventListener('mousedown', () => isDragging = true);
+  canvas.addEventListener('mouseup', () => isDragging = false);
+  canvas.addEventListener('mousemove', scratch);
+  canvas.addEventListener('touchstart', () => isDragging = true);
+  canvas.addEventListener('touchend', () => isDragging = false);
+  canvas.addEventListener('touchmove', (e) => { e.preventDefault(); scratch(e); });
+}
+
+// Split message into lines for dramatic reveal
+function splitMessageIntoLines(message) {
+  // Split by periods, question marks, exclamation marks, or line breaks
+  const sentences = message.split(/(?<=[.!?])\s+(?=[A-Za-z0-9])/);
+  const lines = [];
+  sentences.forEach(sentence => {
+    if (sentence.includes('\n')) {
+      lines.push(...sentence.split('\n'));
+    } else if (sentence.length > 60) {
+      // Split long sentences into chunks
+      const words = sentence.split(' ');
+      let chunk = '';
+      for (const word of words) {
+        if ((chunk + ' ' + word).length > 50) {
+          lines.push(chunk);
+          chunk = word;
+        } else {
+          chunk += (chunk ? ' ' : '') + word;
+        }
+      }
+      if (chunk) lines.push(chunk);
+    } else {
+      lines.push(sentence);
+    }
   });
-  
-  animateCounter();
-});
+  return lines.filter(line => line.trim().length > 0).map(line => line.trim());
+}
 
-// Add CSS
-const styleSheet = document.createElement('style');
-styleSheet.textContent = `
-  @keyframes fade-up {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-6px); }
-    40%, 80% { transform: translateX(6px); }
-  }
-  
-  .emoji-pick-btn {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 6px 10px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .emoji-pick-btn:hover {
-    background: var(--card-hover);
-    transform: scale(1.15);
-  }
-  
-  .template-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 16px;
-    cursor: pointer;
-    transition: all 0.3s;
-  }
-  .template-card:hover {
-    transform: translateY(-4px);
-    border-color: #c084fc;
-  }
-  .template-title {
-    font-weight: 600;
-    margin-bottom: 8px;
-  }
-  .template-preview {
-    font-size: 0.8rem;
-    color: var(--subtext);
-  }
-  
-  .templates-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 16px;
-  }
-  
-  #delivery-status {
-    margin-top: 16px;
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    text-align: center;
-  }
-  
-  .btn-primary {
-    background: linear-gradient(135deg, #c084fc, #818cf8);
-    border: none;
-    padding: 10px 24px;
-    border-radius: 40px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    font-family: inherit;
-  }
-  
-  .bubble.main-msg {
-    background: linear-gradient(135deg, #1e1e32, #2a1a3e);
-    border: 1px solid rgba(192,132,252,0.15);
-  }
-  
-  .reveal-cta {
-    background: linear-gradient(135deg, rgba(192,132,252,0.1), rgba(129,140,248,0.1));
-    border-radius: 20px;
-    padding: 1.5rem;
-    text-align: center;
-    margin-top: 1rem;
-    border: 1px solid rgba(192,132,252,0.2);
-  }
-  
-  .msg-wrap {
-    display: flex;
-    align-items: flex-end;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-  
-  .msg-wrap.in { justify-content: flex-start; }
-  .msg-wrap.out { justify-content: flex-end; }
-  
-  .msg-avatar-sm {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, #c084fc, #818cf8);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-  }
-  
-  .bubble {
-    max-width: 75%;
-    padding: 10px 14px;
-    border-radius: 18px;
-    font-size: 0.9rem;
-    line-height: 1.5;
-  }
-  
-  .bubble.in {
-    background: #1e1e32;
-    border-bottom-left-radius: 4px;
-  }
-  
-  .bubble.out {
-    background: linear-gradient(135deg, #c084fc, #818cf8);
-    border-bottom-right-radius: 4px;
-  }
-  
-  .time {
-    font-size: 0.65rem;
-    opacity: 0.6;
-    margin-top: 4px;
-    text-align: right;
-  }
-  
-  .msg-date-divider {
-    text-align: center;
-    font-size: 0.7rem;
-    color: var(--muted);
-    margin: 16px 0;
-  }
-  
-  .typing-indicator {
-    display: flex;
-    gap: 10px;
-    margin: 8px 0;
-  }
-  
-  .typing-bubble {
-    background: #1e1e32;
-    padding: 12px 16px;
-    border-radius: 18px;
-    border-bottom-left-radius: 4px;
-    display: flex;
-    gap: 4px;
-  }
-  
-  .typing-bubble span {
-    width: 6px;
-    height: 6px;
-    background: #7878a0;
-    border-radius: 50%;
-    animation: typing 1.4s infinite;
-  }
-  
-  @keyframes typing {
-    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30% { transform: translateY(-6px); opacity: 1; }
-  }
-`;
-document.head.appendChild(styleSheet);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
