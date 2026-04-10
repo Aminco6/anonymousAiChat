@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta name="telegram-web-app" content="true" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Send anonymous secret messages that reveal like a chatbot. Share via QR code or link." />
@@ -223,6 +224,19 @@
             <label style="display:block;font-size:0.82rem;font-weight:500;color:var(--subtext);margin-bottom:8px;">Quick Pick Emojis</label>
             <div id="emoji-quick" style="display:flex;gap:6px;flex-wrap:wrap;"></div>
           </div>
+          
+         <div class="form-group">
+  <label for="telegram-recipient">📱 Recipient's Telegram Username *</label>
+  <input type="text" id="telegram-recipient" placeholder="@username" />
+  <small>They'll receive a button to tap and reveal your message instantly!</small>
+</div>
+
+<div class="form-group">
+  <label for="sender-telegram">📱 Your Telegram (optional - to receive replies)</label>
+  <input type="text" id="sender-telegram" placeholder="@username" />
+  <small>If they reply, you'll get it here anonymously</small>
+</div>
+          
 
           <button class="btn-generate" id="generate-btn">
             ✨ Send Anonymous Telegram Message

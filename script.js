@@ -1,6 +1,6 @@
 /* ===========================
-   Anonymous AI Messenger
-   script.js — Complete with Scratch Reveal & Line-by-Line Suspense
+   Anonymous AI Messenger - FINAL VERSION
+   Telegram Web App Integration
    =========================== */
 
 'use strict';
@@ -8,14 +8,25 @@
 // =====================
 // CONFIGURATION
 // =====================
-
-
 const WORKER_API_URL = 'https://anonymous-telegram-bot.voicedontdie.workers.dev';
 
 
+const WEBSITE_URL = 'https://anonymousmessenger.voddic.com.ng';
+
 
 // =====================
-// EXPANDABLE TEASERS POOL - ADD AS MANY AS YOU WANT FOR EACH CATEGORY
+// TELEGRAM WEB APP DETECTION
+// =====================
+let tg = null;
+if (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) {
+  tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+  console.log('✅ Running in Telegram Web App');
+}
+
+// =====================
+// EXPANDABLE TEASERS POOL
 // =====================
 const categoryTeasers = {
   birthday: {
@@ -31,11 +42,7 @@ const categoryTeasers = {
       "💝 A birthday wish from a secret admirer is coming...",
       "🌟 Today is your day and someone noticed...",
       "🎀 A gift-shaped message is waiting to be opened...",
-      "🥳 Someone's celebrating YOU from afar...",
-      "🎈 Pop! A birthday message is about to be delivered...",
-      "🎂 Another trip around the sun, and someone's cheering for you...",
-      "💖 Your secret fan has birthday butterflies...",
-      "✨ Make a wish... someone already made theirs about you..."
+      "🥳 Someone's celebrating YOU from afar..."
     ]
   },
   love_romance: {
@@ -51,11 +58,7 @@ const categoryTeasers = {
       "🌸 Your secret admirer is ready to confess...",
       "✨ Cupid's arrow has struck... someone sent you a message...",
       "💓 Butterflies incoming... someone's thinking of you...",
-      "🌙 Under the moonlight, someone wrote you a message...",
-      "💝 Their heart races every time they see you...",
-      "🌹 A rose has a message attached just for you...",
-      "💌 Someone's been writing and rewriting this for days...",
-      "🌟 You've been on someone's mind... in a romantic way..."
+      "🌙 Under the moonlight, someone wrote you a message..."
     ]
   },
   adult_humor: {
@@ -68,14 +71,10 @@ const categoryTeasers = {
       "🍑 A flirty little secret is about to be revealed...",
       "😉 Someone thinks you're hot... literally...",
       "🌶️ Spicy vibes incoming... open if you dare...",
-      "🍆 Just kidding! But someone does have something to say...",
       "💦 Someone's got a confession that might make you blush...",
       "😈 A little devilish message is waiting for you...",
       "🍒 Someone's feeling cheeky today...",
-      "🔥 Your secret admirer is feeling extra bold...",
-      "😏 They've been practicing this message all week...",
-      "💋 A wink and a whisper... someone's thinking of you...",
-      "🌶️ This message comes with a warning: may cause blushing..."
+      "🔥 Your secret admirer is feeling extra bold..."
     ]
   },
   flirty: {
@@ -91,11 +90,7 @@ const categoryTeasers = {
       "🌸 You've been on someone's mind... in a flirty way...",
       "✨ A little spark is about to fly...",
       "💋 Pucker up? Someone has something cute to say...",
-      "😊 Someone's smiling just thinking about telling you this...",
-      "👀 They've been staring from across the room...",
-      "💫 A little magic and a lot of flirtation coming your way...",
-      "😉 Someone thinks you're something special...",
-      "💕 Butterflies in their stomach... just for you..."
+      "😊 Someone's smiling just thinking about telling you this..."
     ]
   },
   wedding: {
@@ -111,11 +106,7 @@ const categoryTeasers = {
       "🥂 Raise your glass! Wedding wishes are coming...",
       "💒 Someone's heart is full of joy for your union...",
       "💐 A bouquet of blessings is waiting to be opened...",
-      "🎊 Congratulations! Someone wants to celebrate with you...",
-      "💍 Two hearts, one love... a wedding blessing awaits...",
-      "🥂 Here's to forever... someone wants to toast to you...",
-      "💒 Your love story inspired someone to write this...",
-      "🎀 A wedding wish wrapped with love is coming..."
+      "🎊 Congratulations! Someone wants to celebrate with you..."
     ]
   },
   relationship: {
@@ -131,11 +122,7 @@ const categoryTeasers = {
       "🤲 A peace offering in digital form awaits...",
       "💬 Someone's been wanting to tell you something important...",
       "🌟 You matter to someone... open to find out who...",
-      "💪 A message about us is waiting to be read...",
-      "🤝 A bridge is being built... someone wants to connect...",
-      "💖 Your presence in their life means everything...",
-      "🙏 Gratitude and love are headed your way...",
-      "💬 A conversation starter from someone who cares deeply..."
+      "💪 A message about us is waiting to be read..."
     ]
   },
   sympathy: {
@@ -151,11 +138,7 @@ const categoryTeasers = {
       "💝 A gentle message of love and support awaits...",
       "🌈 Brighter days are ahead... someone believes in you...",
       "🤲 You're in someone's thoughts and prayers...",
-      "💪 You're stronger than you know... open for a reminder...",
-      "🌻 Thinking of you during this season...",
-      "🕊️ Peace and comfort are being sent your way...",
-      "💕 Someone's holding space for you in their heart...",
-      "🤗 A shoulder to lean on... through this message..."
+      "💪 You're stronger than you know... open for a reminder..."
     ]
   },
   fun: {
@@ -171,11 +154,7 @@ const categoryTeasers = {
       "🤣 Someone's trying to make you LOL...",
       "😹 This message might cause spontaneous giggling...",
       "🎪 Step right up for a fun surprise!",
-      "🦄 Something magical and silly is waiting...",
-      "😂 Warning: May cause uncontrollable smiling...",
-      "🎉 Party popper! Someone's sending fun your way...",
-      "🤪 Get ready for a dose of happiness...",
-      "🃏 A little humor to brighten your day..."
+      "🦄 Something magical and silly is waiting..."
     ]
   },
   holidays: {
@@ -191,11 +170,7 @@ const categoryTeasers = {
       "🎅 Santa's not the only one with a message for you...",
       "✨ Holiday magic is in the air... and in this message...",
       "🕯️ Someone's sending warm wishes your way...",
-      "🎊 Let the celebrations begin! A holiday greeting awaits...",
-      "🎄 Deck the halls... with a secret message...",
-      "🎆 Fireworks of joy are coming your way...",
-      "🥂 A toast to you this holiday season...",
-      "🎁 Unwrap this message like a holiday gift..."
+      "🎊 Let the celebrations begin! A holiday greeting awaits..."
     ]
   },
   islamic: {
@@ -211,11 +186,7 @@ const categoryTeasers = {
       "🌙 Moonlit blessings are being delivered...",
       "🤲 Your name was mentioned in someone's dua...",
       "✨ A message of peace and blessings awaits...",
-      "📖 Someone found a verse that reminded them of you...",
-      "🌙 Ramadan or Eid blessings coming your way...",
-      "🕌 Peace and serenity are being sent to you...",
-      "🤲 May this message bring barakah to your day...",
-      "🌟 Someone made dua especially for you..."
+      "📖 Someone found a verse that reminded them of you..."
     ]
   },
   nigeria: {
@@ -231,30 +202,19 @@ const categoryTeasers = {
       "🦅 Soaring high like an eagle... open to see who's proud of you...",
       "🎊 Naija vibes! Someone's sending love from home...",
       "🍛 Suya and love? Someone's thinking of you...",
-      "💚 One Nigeria, one love... a message awaits...",
-      "🇳🇬 From Lagos to Kano... someone's thinking of you...",
-      "🥁 Talking drum beats... a message from home...",
-      "🎉 Celebration time! Someone's proud to know you...",
-      "💚🤍💚 Unity and love... wrapped in this message..."
+      "💚 One Nigeria, one love... a message awaits..."
     ]
   }
 };
 
-// Helper function to get random teasers from category
 function getRandomTeasers(category, count = 4) {
   const teaserList = categoryTeasers[category]?.teasers || [
     "🤫 Shh... I have a secret to tell you...",
     "✨ Someone sent you something special...",
     "💭 They've been thinking about you all day...",
     "🎁 It's a message just for you...",
-    "💌 Are you ready to hear what they said?",
-    "😊 They wanted you to know something important...",
-    "🌟 Opening your secret message now...",
-    "💖 This might make your day...",
-    "🎀 Ready?"
+    "💌 Are you ready to hear what they said?"
   ];
-  
-  // Shuffle and return random teasers
   const shuffled = [...teaserList].sort(() => Math.random() - 0.5);
   return shuffled.slice(0, count);
 }
@@ -272,27 +232,6 @@ function getTime() {
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function encodeParams(data) {
-  return Object.entries(data)
-    .filter(([, v]) => v && String(v).trim())
-    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-    .join('&');
-}
-
-function decodeHash(hash) {
-  const params = {};
-  if (!hash || hash.length < 2) return params;
-  const str = hash.startsWith('#') ? hash.substring(1) : hash;
-  
-  str.split('&').forEach(pair => {
-    const [k, v] = pair.split('=');
-    if (k && v) {
-      params[decodeURIComponent(k)] = decodeURIComponent(v);
-    }
-  });
-  return params;
 }
 
 function copyToClipboard(text) {
@@ -326,7 +265,6 @@ function showToast(message, isError = false) {
     white-space: nowrap;
   `;
   document.body.appendChild(toast);
-  
   setTimeout(() => {
     toast.style.animation = 'fade-up 0.3s ease reverse';
     setTimeout(() => toast.remove(), 300);
@@ -334,207 +272,38 @@ function showToast(message, isError = false) {
 }
 
 // =====================
-// LINE-BY-LINE MESSAGE REVEAL WITH SUSPENSE
+// CREATE SECRET MESSAGE (Web App)
 // =====================
-function splitMessageIntoLines(message) {
-  // Split by periods, question marks, exclamation marks followed by space or newline
-  // Also preserve line breaks
-  const sentences = message.split(/(?<=[.!?])\s+(?=[A-Za-z0-9])/);
-  const lines = [];
-  sentences.forEach(sentence => {
-    if (sentence.includes('\n')) {
-      lines.push(...sentence.split('\n'));
-    } else {
-      lines.push(sentence);
-    }
-  });
-  return lines.filter(line => line.trim().length > 0).map(line => line.trim());
-}
-
-// Split message into chunks of words for even more suspense
-function splitMessageIntoWordChunks(message, wordsPerChunk = 8) {
-  const words = message.split(/\s+/);
-  const chunks = [];
-  for (let i = 0; i < words.length; i += wordsPerChunk) {
-    chunks.push(words.slice(i, i + wordsPerChunk).join(' '));
-  }
-  return chunks;
-}
-
-// =====================
-// SCRATCH CARD FOR MESSAGE REVEAL
-// =====================
-function createMessageScratchCard(messageId) {
-  return `
-    <div class="scratch-message-container" id="scratch-container-${messageId}">
-      <div class="scratch-card-label">✨ SCRATCH TO REVEAL THE SECRET MESSAGE ✨</div>
-      <div class="scratch-area">
-        <canvas id="scratch-canvas-${messageId}" width="300" height="120" class="message-scratch-canvas"></canvas>
-        <div class="scratch-overlay-text">← Scratch Here →</div>
-      </div>
-      <div id="scratch-message-content-${messageId}" class="scratch-message-hidden" style="display: none;">
-        <div class="scratch-loading">✨ Preparing your message... ✨</div>
-      </div>
-    </div>
-  `;
-}
-
-function initMessageScratchCard(canvasId, onRevealComplete) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  
-  const ctx = canvas.getContext('2d');
-  const container = canvas.closest('.scratch-message-container');
-  const contentDiv = container?.querySelector(`[id^="scratch-message-content"]`);
-  let isDragging = false;
-  let isRevealed = false;
-  let scratchedPixels = 0;
-  
-  // Draw scratch layer
-  ctx.fillStyle = '#888';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  // Add pattern
-  ctx.fillStyle = '#666';
-  for (let i = 0; i < 400; i++) {
-    ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
-  }
-  
-  // Draw scratch text
-  ctx.fillStyle = '#c084fc';
-  ctx.font = 'bold 14px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('← SCRATCH HERE →', canvas.width/2, canvas.height/2);
-  
-  function getCoords(e) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    
-    let clientX, clientY;
-    if (e.touches) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
-    
-    return {
-      x: Math.max(0, Math.min(canvas.width, (clientX - rect.left) * scaleX)),
-      y: Math.max(0, Math.min(canvas.height, (clientY - rect.top) * scaleY))
-    };
-  }
-  
-  function scratch(e) {
-    if (!isDragging || isRevealed) return;
-    e.preventDefault();
-    
-    const { x, y } = getCoords(e);
-    
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.arc(x, y, 15, 0, Math.PI * 2);
-    ctx.fill();
-    
-    scratchedPixels++;
-    
-    // Check if scratched enough (center area)
-    if (!isRevealed) {
-      const imageData = ctx.getImageData(canvas.width/2, canvas.height/2, 1, 1);
-      if (imageData.data[3] === 0 || scratchedPixels > 80) {
-        isRevealed = true;
-        canvas.style.display = 'none';
-        const overlayText = container?.querySelector('.scratch-overlay-text');
-        if (overlayText) overlayText.style.display = 'none';
-        
-        if (contentDiv) {
-          contentDiv.style.display = 'block';
-          contentDiv.innerHTML = '<div class="scratch-loading">✨ Revealing message... ✨</div>';
-        }
-        
-        if (onRevealComplete) onRevealComplete();
-      }
-    }
-  }
-  
-  canvas.addEventListener('mousedown', () => isDragging = true);
-  canvas.addEventListener('mouseup', () => isDragging = false);
-  canvas.addEventListener('mousemove', scratch);
-  canvas.addEventListener('touchstart', () => isDragging = true);
-  canvas.addEventListener('touchend', () => isDragging = false);
-  canvas.addEventListener('touchmove', (e) => { e.preventDefault(); scratch(e); });
-}
-
-// =====================
-// LINE-BY-LINE MESSAGE DISPLAY WITH SUSPENSE
-// =====================
-async function revealMessageLineByLine(container, message, avatarEmoji, options = {}) {
-  const { wordsPerChunk = 6, delayBetweenChunks = 800, onComplete } = options;
-  
-  // Split into chunks of words for suspense
-  const chunks = splitMessageIntoWordChunks(message, wordsPerChunk);
-  
-  for (let i = 0; i < chunks.length; i++) {
-    const chunk = chunks[i];
-    const isLastChunk = (i === chunks.length - 1);
-    
-    // Show typing indicator
-    await showTyping(container, 800 + (chunk.length * 15));
-    
-    // Append the chunk
-    appendBubble(container, 'in', chunk, avatarEmoji, !isLastChunk);
-    
-    if (!isLastChunk) {
-      await sleep(delayBetweenChunks);
-    }
-  }
-  
-  if (onComplete) onComplete();
-}
-
-// =====================
-// TELEGRAM MESSAGE DELIVERY
-// =====================
-async function sendAnonymousTelegramMessage(message, recipientTelegram, senderName, emoji, category) {
+async function createSecretMessage(message, recipientTelegram, senderName, emoji, category, senderTelegram) {
   const statusDiv = document.getElementById('delivery-status');
   
   if (statusDiv) {
     statusDiv.style.display = 'block';
-    statusDiv.style.background = 'rgba(192,132,252,0.1)';
-    statusDiv.innerHTML = '📤 Sending your anonymous message...';
+    statusDiv.innerHTML = '🔐 Creating your secret message...';
   }
   
   try {
-    console.log('Sending to worker:', WORKER_API_URL);
-    console.log('Recipient:', recipientTelegram);
-    console.log('Message:', message.substring(0, 50));
-    
-    const response = await fetch(`${WORKER_API_URL}/api/send`, {
+    const response = await fetch(`${WORKER_API_URL}/api/create`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        recipientTelegram: recipientTelegram,
         message: message,
-        senderId: `user_${Date.now()}_${Math.random().toString(36).substr(2, 8)}`,
+        recipientTelegram: recipientTelegram,
         senderName: senderName || 'Secret Admirer',
         category: category || 'general',
-        emoji: emoji || '💌'
+        emoji: emoji || '💌',
+        senderTelegram: senderTelegram || null
       })
     });
     
-    console.log('Response status:', response.status);
-    
     const result = await response.json();
-    console.log('Response result:', result);
     
     if (result.success) {
       if (statusDiv) {
         statusDiv.style.background = 'rgba(16,185,129,0.1)';
-        statusDiv.innerHTML = `✅ Message sent anonymously to @${recipientTelegram.replace('@', '')}! They will receive a secret link.`;
+        statusDiv.innerHTML = `✅ Secret message sent to @${recipientTelegram.replace('@', '')}! They'll receive a button to tap and reveal.`;
       }
       showToast('✅ Message sent anonymously!');
-      trackEvent('telegram_message_sent', { category: category });
       
       // Clear form
       document.getElementById('msg-text').value = '';
@@ -544,20 +313,64 @@ async function sendAnonymousTelegramMessage(message, recipientTelegram, senderNa
       setTimeout(() => {
         if (statusDiv) statusDiv.style.display = 'none';
       }, 5000);
+      
+      return result;
     } else {
-      throw new Error(result.error || 'Failed to send');
+      throw new Error(result.error);
     }
   } catch (error) {
-    console.error('Send error:', error);
+    console.error('Create error:', error);
     if (statusDiv) {
       statusDiv.style.background = 'rgba(239,68,68,0.1)';
-      statusDiv.innerHTML = `❌ Error: ${error.message}. Make sure the worker is deployed and the URL is correct.`;
+      statusDiv.innerHTML = `❌ Failed: ${error.message}`;
     }
-    showToast(`❌ Error: ${error.message}`, true);
+    showToast('❌ Failed to send message', true);
+    return null;
   }
 }
 
+// =====================
+// LOAD MESSAGE (when user clicks Web App button)
+// =====================
+async function loadSecretMessage(messageId) {
+  try {
+    const response = await fetch(`${WORKER_API_URL}/api/message?id=${messageId}`);
+    const result = await response.json();
+    
+    if (result.success) {
+      return result;
+    } else {
+      showToast('Message not found or expired', true);
+      return null;
+    }
+  } catch (error) {
+    console.error('Load error:', error);
+    return null;
+  }
+}
 
+// =====================
+// SEND REPLY
+// =====================
+async function sendReply(messageId, replyMessage, replierTelegram) {
+  try {
+    const response = await fetch(`${WORKER_API_URL}/api/reply`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messageId: messageId,
+        replyMessage: replyMessage,
+        replierTelegram: replierTelegram || null
+      })
+    });
+    
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Reply error:', error);
+    return { success: false, error: error.message };
+  }
+}
 
 // =====================
 // COUNTER
@@ -578,32 +391,12 @@ function incrementCount() {
 
 function updateCounterDisplay() {
   const el = document.getElementById('msg-count');
-  if (el) {
-    el.textContent = getCount().toLocaleString() + '+';
-  }
+  if (el) el.textContent = getCount().toLocaleString() + '+';
 }
 
 // =====================
 // QR CODE GENERATION
 // =====================
-function generateQR(containerId, url, size = 180) {
-  const container = document.getElementById(containerId);
-  if (!container) return;
-  container.innerHTML = '';
-  try {
-    new QRCode(container, {
-      text: url,
-      width: size,
-      height: size,
-      colorDark: '#000000',
-      colorLight: '#ffffff',
-      correctLevel: QRCode.CorrectLevel.M
-    });
-  } catch (e) {
-    console.error('QR generation error:', e);
-  }
-}
-
 function generateQRWithBackground(containerId, url, size = 180, category = 'default') {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -699,7 +492,7 @@ function handleGenerate() {
   const senderName = (document.getElementById('msg-from')?.value || '').trim();
   const emoji = (document.getElementById('msg-emoji')?.value || '').trim();
   const category = document.getElementById('msg-category')?.value || '';
-  const recipientName = (document.getElementById('recipient-name')?.value || '').trim();
+  const senderTelegram = (document.getElementById('sender-telegram')?.value || '').trim();
 
   if (!msg) {
     shakeElement(document.getElementById('msg-text'));
@@ -713,41 +506,9 @@ function handleGenerate() {
     return;
   }
 
-  // Send via Telegram
-  sendAnonymousTelegramMessage(msg, recipient, senderName, emoji, category);
+  createSecretMessage(msg, recipient, senderName, emoji, category, senderTelegram);
   trackEvent('message_created', { category: category || 'none' });
   incrementCount();
-}
-
-function showResult(url, emoji, category) {
-  const resultCard = document.getElementById('result-card');
-  const linkEl = document.getElementById('share-link');
-
-  if (resultCard) {
-    resultCard.classList.add('visible');
-    resultCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }
-
-  if (linkEl) {
-    const span = linkEl.querySelector('span');
-    if (span) span.textContent = url;
-  }
-
-  generateQRWithBackground('qrcode', url, 180, category);
-  updateShareButtons(url);
-}
-
-function updateShareButtons(url) {
-  const text = encodeURIComponent(`Someone left you a secret message 🤫`);
-  const fullText = encodeURIComponent(`Someone left you a secret message 🤫 Open it here: ${url}`);
-
-  const wa = document.getElementById('share-wa');
-  const fb = document.getElementById('share-fb');
-  const tw = document.getElementById('share-tw');
-
-  if (wa) wa.href = `https://wa.me/?text=${fullText}`;
-  if (fb) fb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
-  if (tw) tw.href = `https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(url)}`;
 }
 
 function shakeElement(el) {
@@ -759,39 +520,12 @@ function shakeElement(el) {
 }
 
 // =====================
-// COPY LINK
-// =====================
-function initCopyLink() {
-  const linkEl = document.getElementById('share-link');
-  if (linkEl) {
-    linkEl.addEventListener('click', () => {
-      const span = linkEl.querySelector('span');
-      if (span) {
-        copyToClipboard(span.textContent);
-        linkEl.classList.add('copied');
-        setTimeout(() => linkEl.classList.remove('copied'), 2000);
-      }
-    });
-  }
-
-  const copyBtn = document.getElementById('share-copy');
-  if (copyBtn) {
-    copyBtn.addEventListener('click', () => {
-      copyToClipboard(window._currentShareUrl || window.location.href);
-      copyBtn.textContent = '✅ Copied!';
-      setTimeout(() => copyBtn.textContent = '🔗 Copy Link', 2000);
-    });
-  }
-}
-
-// =====================
-// TEMPLATES STORE
+// TEMPLATES
 // =====================
 let currentTemplateCategory = 'all';
 let currentTemplatePage = 1;
 const TEMPLATES_PER_PAGE = 8;
 let allTemplates = [];
-let isLoadingTemplates = false;
 
 const templateCategories = [
   { id: 'birthday', name: '🎂 Birthday', icon: '🎂', file: 'birthday.json' },
@@ -809,10 +543,9 @@ const templateCategories = [
 
 async function loadTemplates() {
   const grid = document.getElementById('templates-grid');
-  if (!grid || isLoadingTemplates) return;
+  if (!grid) return;
   
-  isLoadingTemplates = true;
-  grid.innerHTML = '<div class="template-card" style="padding:40px;text-align:center;color:var(--muted);grid-column:1/-1;">Loading templates... ✨</div>';
+  grid.innerHTML = '<div class="template-card" style="padding:40px;text-align:center;">Loading templates... ✨</div>';
   
   try {
     allTemplates = [];
@@ -840,22 +573,13 @@ async function loadTemplates() {
       }
     }
     
-    if (allTemplates.length === 0) {
-      allTemplates = FALLBACK_TEMPLATES;
-    }
-    
     renderTemplateCategoryTabs();
     renderTemplatesByCategory('all');
     
   } catch (error) {
     console.error('Error loading templates:', error);
-    grid.innerHTML = '<div class="template-card" style="padding:40px;text-align:center;color:var(--muted);grid-column:1/-1;">Failed to load templates. Refresh page. 🔄</div>';
-    allTemplates = FALLBACK_TEMPLATES;
-    renderTemplateCategoryTabs();
-    renderTemplatesByCategory('all');
+    grid.innerHTML = '<div class="template-card" style="padding:40px;text-align:center;">Failed to load templates. Refresh page. 🔄</div>';
   }
-  
-  isLoadingTemplates = false;
 }
 
 function renderTemplateCategoryTabs() {
@@ -899,9 +623,7 @@ function renderTemplatesByCategory(category) {
   }
   
   if (filteredTemplates.length === 0) {
-    grid.innerHTML = `<div class="template-card" style="padding:40px;text-align:center;color:var(--muted);grid-column:1/-1;">No templates in this category yet.</div>`;
-    const existingButtons = document.querySelector('.template-load-buttons');
-    if (existingButtons) existingButtons.remove();
+    grid.innerHTML = `<div class="template-card" style="padding:40px;text-align:center;">No templates in this category yet.</div>`;
     return;
   }
   
@@ -982,7 +704,6 @@ function updateTemplateLoadButtons(hasMore, hasLess, totalCount, category) {
   if (!hasMore && !hasLess) return;
   
   const grid = document.getElementById('templates-grid');
-  
   const buttonsDiv = document.createElement('div');
   buttonsDiv.className = 'template-load-buttons';
   
@@ -1013,25 +734,38 @@ function updateTemplateLoadButtons(hasMore, hasLess, totalCount, category) {
   }
 }
 
-const FALLBACK_TEMPLATES = [
-  { id: 'f1', title: "🎂 Someone secretly likes you", message: "Someone out there notices you — in the best way possible.", emoji: "👀", from: "Secret Admirer", category: "birthday", original_text: "Someone out there notices you — in the best way possible." },
-  { id: 'f2', title: "🌟 A message from your future self", message: "It all works out. Keep going — future you is proud of you.", emoji: "🌟", from: "Future You", category: "love_romance", original_text: "It all works out. Keep going — future you is proud of you." },
-  { id: 'f3', title: "☀️ Someone noticed your smile", message: "Your smile lit up the whole room. Someone couldn't look away.", emoji: "☀️", from: "Silent Observer", category: "flirty", original_text: "Your smile lit up the whole room. Someone couldn't look away." },
-  { id: 'f4', title: "💜 You are appreciated", message: "Someone thinks about you more than you know. They appreciate your kindness.", emoji: "💜", from: "Someone Who Cares", category: "relationship", original_text: "Someone thinks about you more than you know." }
-];
-
 // =====================
-// COMPLETE CHAT SEQUENCE WITH SCRATCH REVEAL & LINE-BY-LINE
+// CHAT SEQUENCE
 // =====================
 let chatActive = false;
-let currentMessageRevealed = false;
 
 function checkAndLoadChat() {
-  const hash = window.location.hash;
-  const params = decodeHash(hash);
-  if (params.msg && !chatActive) {
+  const urlParams = new URLSearchParams(window.location.search);
+  const messageId = urlParams.get('id');
+  
+  if (messageId && !chatActive) {
     chatActive = true;
-    openChat(params);
+    loadSecretMessage(messageId).then(messageData => {
+      if (messageData) {
+        openChat({
+          msg: messageData.message,
+          from: messageData.senderName,
+          emoji: messageData.emoji,
+          category: messageData.category,
+          messageId: messageId
+        });
+      } else {
+        document.getElementById('chat-overlay').classList.add('active');
+        document.getElementById('chat-messages').innerHTML = `
+          <div style="text-align:center;padding:50px;">
+            <div style="font-size:3rem;">😢</div>
+            <h3>Message Not Found</h3>
+            <p>This secret message may have expired or been deleted.</p>
+            <button class="btn-primary" onclick="closeChat()">Go Back</button>
+          </div>
+        `;
+      }
+    });
   }
 }
 
@@ -1050,7 +784,6 @@ function openChat(params) {
   const splashIcon = overlay.querySelector('.splash-icon');
   if (splashIcon) splashIcon.textContent = avatarEmoji;
   
-  trackEvent('message_opened', { category: category });
   startChatSequence(params);
 }
 
@@ -1059,8 +792,45 @@ function closeChat() {
   if (overlay) overlay.classList.remove('active');
   document.body.style.overflow = '';
   chatActive = false;
-  currentMessageRevealed = false;
+  if (tg) tg.close();
   history.pushState('', document.title, window.location.pathname + window.location.search);
+}
+
+function splitMessageIntoLines(message) {
+  const sentences = message.split(/(?<=[.!?])\s+(?=[A-Za-z0-9])/);
+  const lines = [];
+  sentences.forEach(sentence => {
+    if (sentence.includes('\n')) {
+      lines.push(...sentence.split('\n'));
+    } else {
+      lines.push(sentence);
+    }
+  });
+  return lines.filter(line => line.trim().length > 0).map(line => line.trim());
+}
+
+function splitMessageIntoWordChunks(message, wordsPerChunk = 8) {
+  const words = message.split(/\s+/);
+  const chunks = [];
+  for (let i = 0; i < words.length; i += wordsPerChunk) {
+    chunks.push(words.slice(i, i + wordsPerChunk).join(' '));
+  }
+  return chunks;
+}
+
+function createMessageScratchCard(messageId) {
+  return `
+    <div class="scratch-message-container" id="scratch-container-${messageId}">
+      <div class="scratch-card-label">✨ SCRATCH TO REVEAL THE SECRET MESSAGE ✨</div>
+      <div class="scratch-area">
+        <canvas id="scratch-canvas-${messageId}" width="300" height="120" class="message-scratch-canvas"></canvas>
+        <div class="scratch-overlay-text">← Scratch Here →</div>
+      </div>
+      <div id="scratch-message-content-${messageId}" class="scratch-message-hidden" style="display: none;">
+        <div class="scratch-loading">✨ Preparing your message... ✨</div>
+      </div>
+    </div>
+  `;
 }
 
 async function startChatSequence(params) {
@@ -1071,6 +841,7 @@ async function startChatSequence(params) {
   const messageLogo = params.emoji || getCategoryIcon(category);
   const recipientName = params.recipient || 'there';
   const senderName = params.from || null;
+  const messageId = params.messageId;
   
   if (!messagesEl) return;
   
@@ -1086,7 +857,7 @@ async function startChatSequence(params) {
   
   appendDateDivider(messagesEl, 'Today');
   
-  // ========== STEP 1: TIME GREETING ==========
+  // Time greeting
   const hour = new Date().getHours();
   let greeting = "Hello";
   let greetingEmoji = "👋";
@@ -1099,9 +870,8 @@ async function startChatSequence(params) {
   appendBubble(messagesEl, 'in', `${greetingEmoji} ${greeting}, ${recipientName}! ✨`, messageLogo);
   await sleep(1500);
   
-  // ========== STEP 2: RANDOM TEASERS FROM CATEGORY ==========
+  // Random teasers
   const randomTeasers = getRandomTeasers(category, 4);
-  
   for (let i = 0; i < randomTeasers.length; i++) {
     await showTyping(messagesEl, 1200);
     let teaserEmoji = messageLogo;
@@ -1111,7 +881,7 @@ async function startChatSequence(params) {
     await sleep(2000 + Math.random() * 500);
   }
   
-  // ========== STEP 3: ANTICIPATION ==========
+  // Anticipation
   await showTyping(messagesEl, 1000);
   appendBubble(messagesEl, 'in', "💭 They've been waiting to share this with you...", "💭");
   await sleep(1800);
@@ -1120,7 +890,7 @@ async function startChatSequence(params) {
   appendBubble(messagesEl, 'in', "⏰ The moment has arrived...", "⏰");
   await sleep(1500);
   
-  // ========== STEP 4: SCRATCH CARD FOR MESSAGE REVEAL ==========
+  // Scratch card
   await showTyping(messagesEl, 1200);
   appendBubble(messagesEl, 'in', "✨ Their message is hidden below. Scratch to reveal it... ✨", "✨");
   await sleep(1000);
@@ -1129,13 +899,11 @@ async function startChatSequence(params) {
   const scratchHtml = createMessageScratchCard(scratchId);
   appendHtmlBubble(messagesEl, 'in', scratchHtml, "🎫");
   
-  // Initialize scratch card
   await sleep(500);
   
-  // Wait for scratch completion
+  // Wait for scratch
   await new Promise((resolve) => {
     let resolved = false;
-    
     const checkInterval = setInterval(() => {
       const contentDiv = document.getElementById(`scratch-message-content-${scratchId}`);
       if (contentDiv && contentDiv.style.display === 'block' && !resolved) {
@@ -1144,8 +912,6 @@ async function startChatSequence(params) {
         resolve();
       }
     }, 500);
-    
-    // Timeout after 30 seconds
     setTimeout(() => {
       if (!resolved) {
         clearInterval(checkInterval);
@@ -1154,43 +920,66 @@ async function startChatSequence(params) {
     }, 30000);
   });
   
-  // Update the content div with loading state then reveal
   const contentDiv = document.getElementById(`scratch-message-content-${scratchId}`);
   if (contentDiv) {
     contentDiv.innerHTML = '<div class="scratch-loading">✨ Preparing your message... ✨</div>';
     await sleep(800);
     
-    // Start revealing line by line
     contentDiv.innerHTML = '<div class="scratch-message-reveal" id="line-reveal-container"></div>';
     const revealContainer = contentDiv.querySelector('.scratch-message-reveal');
     
-    // Reveal message line by line with suspense
-    await revealMessageInContainer(revealContainer, messageText, messageLogo);
+    const lines = splitMessageIntoLines(messageText);
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      const lineDiv = document.createElement('div');
+      lineDiv.className = 'reveal-line';
+      lineDiv.style.opacity = '0';
+      lineDiv.style.transform = 'translateY(10px)';
+      lineDiv.style.transition = 'all 0.3s ease';
+      lineDiv.innerHTML = `<span class="reveal-emoji">${messageLogo}</span> <span class="reveal-text">${escapeHtml(line)}</span>`;
+      revealContainer.appendChild(lineDiv);
+      
+      setTimeout(() => {
+        lineDiv.style.opacity = '1';
+        lineDiv.style.transform = 'translateY(0)';
+      }, 100);
+      
+      const delay = Math.min(800 + line.length * 20, 2000);
+      await sleep(delay);
+    }
   }
   
   await sleep(1000);
   
-  // ========== STEP 5: SENDER REVEAL ==========
+  // Sender reveal
   if (senderName) {
     await showTyping(messagesEl, 1000);
     appendBubble(messagesEl, 'in', `— ${senderName} ${params.emoji || messageLogo}`, messageLogo);
   } else {
     await sleep(800);
-    const anonymousSenders = ["— Someone who cares", "— A secret admirer", "— Someone thinking of you", "— Your secret sender"];
+    const anonymousSenders = ["— Someone who cares", "— A secret admirer", "— Someone thinking of you"];
     const randomSender = anonymousSenders[Math.floor(Math.random() * anonymousSenders.length)];
     appendBubble(messagesEl, 'in', `${randomSender} ${params.emoji || '💌'}`, messageLogo);
   }
   
-  // ========== STEP 6: REPLY OPTION ==========
+  // Reply option
   await sleep(1500);
   
   const replyCta = document.createElement('div');
   replyCta.className = 'reveal-cta';
   replyCta.innerHTML = `
     <p>💝 Want to reply to your anonymous secret admirer? 💝</p>
-    <p style="font-size:0.8rem; margin-bottom:1rem;">Create your own anonymous message to send back!</p>
+    <div class="reply-input-group" style="margin: 15px 0;">
+      <textarea id="reply-message" placeholder="Type your anonymous reply here..." rows="3" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px; color:var(--text); margin-bottom:10px;"></textarea>
+      <input type="text" id="reply-telegram" placeholder="Your Telegram (optional - to get reply back)" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px; color:var(--text); margin-bottom:10px;">
+      <button class="btn-primary" onclick="sendReplyToSender('${messageId}')">
+        ✨ Send Anonymous Reply
+      </button>
+    </div>
+    <hr style="border-color:var(--border); margin:15px 0;">
+    <p>Want to send your own secret message? 😏</p>
     <button class="btn-primary" onclick="goToCreator()">
-      ✨ Send Anonymous Reply
+      ✨ Create Your Message
     </button>
   `;
   messagesEl.appendChild(replyCta);
@@ -1199,33 +988,26 @@ async function startChatSequence(params) {
   incrementCount();
 }
 
-// Helper function to reveal message line by line inside a container
-async function revealMessageInContainer(container, message, avatarEmoji) {
-  // Split into lines/sentences for dramatic effect
-  const lines = splitMessageIntoLines(message);
+async function sendReplyToSender(messageId) {
+  const replyMessage = document.getElementById('reply-message')?.value.trim();
+  const replierTelegram = document.getElementById('reply-telegram')?.value.trim();
   
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const lineDiv = document.createElement('div');
-    lineDiv.className = 'reveal-line';
-    lineDiv.style.opacity = '0';
-    lineDiv.style.transform = 'translateY(10px)';
-    lineDiv.style.transition = 'all 0.3s ease';
-    lineDiv.innerHTML = `<span class="reveal-emoji">${avatarEmoji}</span> <span class="reveal-text">${escapeHtml(line)}</span>`;
-    container.appendChild(lineDiv);
-    
-    // Animate in
-    setTimeout(() => {
-      lineDiv.style.opacity = '1';
-      lineDiv.style.transform = 'translateY(0)';
-    }, 100);
-    
-    // Scroll to show new line
-    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    
-    // Delay between lines based on length
-    const delay = Math.min(800 + line.length * 20, 2000);
-    await sleep(delay);
+  if (!replyMessage) {
+    showToast('Please write a reply', true);
+    return;
+  }
+  
+  showToast('📤 Sending anonymous reply...');
+  
+  const result = await sendReply(messageId, replyMessage, replierTelegram);
+  
+  if (result.success) {
+    showToast('✅ Reply sent anonymously!');
+    document.getElementById('reply-message').value = '';
+    document.getElementById('reply-telegram').value = '';
+    if (tg) tg.close();
+  } else {
+    showToast('❌ Failed to send reply', true);
   }
 }
 
@@ -1253,14 +1035,91 @@ function appendHtmlBubble(container, direction, html, avatarEmoji = '🤖') {
   container.appendChild(wrap);
   container.scrollTop = container.scrollHeight;
   
-  // Initialize scratch card if present
   const scratchCanvas = wrap.querySelector('.message-scratch-canvas');
   if (scratchCanvas) {
-    const canvasId = scratchCanvas.id;
-    initMessageScratchCard(canvasId, () => {
-      // On reveal complete - this is handled by the interval in startChatSequence
-    });
+    initMessageScratchCard(scratchCanvas.id);
   }
+}
+
+function initMessageScratchCard(canvasId) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  
+  const ctx = canvas.getContext('2d');
+  const container = canvas.closest('.scratch-message-container');
+  const contentDiv = container?.querySelector(`[id^="scratch-message-content"]`);
+  let isDragging = false;
+  let isRevealed = false;
+  let scratchedPixels = 0;
+  
+  ctx.fillStyle = '#888';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+  ctx.fillStyle = '#666';
+  for (let i = 0; i < 400; i++) {
+    ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
+  }
+  
+  ctx.fillStyle = '#c084fc';
+  ctx.font = 'bold 14px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('← SCRATCH HERE →', canvas.width/2, canvas.height/2);
+  
+  function getCoords(e) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    let clientX, clientY;
+    if (e.touches) {
+      clientX = e.touches[0].clientX;
+      clientY = e.touches[0].clientY;
+    } else {
+      clientX = e.clientX;
+      clientY = e.clientY;
+    }
+    
+    return {
+      x: Math.max(0, Math.min(canvas.width, (clientX - rect.left) * scaleX)),
+      y: Math.max(0, Math.min(canvas.height, (clientY - rect.top) * scaleY))
+    };
+  }
+  
+  function scratch(e) {
+    if (!isDragging || isRevealed) return;
+    e.preventDefault();
+    
+    const { x, y } = getCoords(e);
+    
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x, y, 15, 0, Math.PI * 2);
+    ctx.fill();
+    
+    scratchedPixels++;
+    
+    if (!isRevealed) {
+      const imageData = ctx.getImageData(canvas.width/2, canvas.height/2, 1, 1);
+      if (imageData.data[3] === 0 || scratchedPixels > 80) {
+        isRevealed = true;
+        canvas.style.display = 'none';
+        const overlayText = container?.querySelector('.scratch-overlay-text');
+        if (overlayText) overlayText.style.display = 'none';
+        
+        if (contentDiv) {
+          contentDiv.style.display = 'block';
+          contentDiv.innerHTML = '<div class="scratch-loading">✨ Revealing message... ✨</div>';
+        }
+      }
+    }
+  }
+  
+  canvas.addEventListener('mousedown', () => isDragging = true);
+  canvas.addEventListener('mouseup', () => isDragging = false);
+  canvas.addEventListener('mousemove', scratch);
+  canvas.addEventListener('touchstart', () => isDragging = true);
+  canvas.addEventListener('touchend', () => isDragging = false);
+  canvas.addEventListener('touchmove', (e) => { e.preventDefault(); scratch(e); });
 }
 
 function appendDateDivider(container, text) {
@@ -1330,11 +1189,24 @@ function goToCreator() {
   }, 300);
 }
 
+function encodeParams(data) {
+  return Object.entries(data)
+    .filter(([, v]) => v && String(v).trim())
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&');
+}
+
+function trackEvent(eventName, params = {}) {
+  if (typeof gtag === 'function') {
+    gtag('event', eventName, params);
+  }
+}
+
 // =====================
 // INITIALIZATION
 // =====================
 function initEmojiPicker() {
-  const emojis = ['💌', '💜', '❤️', '🔥', '👀', '🌹', '✨', '🥺', '😍', '🫶', '😘', '💋', '🎂', '🎉', '🌟', '💎', '🌸', '🦋', '⭐', '💫', '⚡', '💕', '💖', '💗', '💓', '💞', '💝', '🎁'];
+  const emojis = ['💌', '💜', '❤️', '🔥', '👀', '🌹', '✨', '🥺', '😍', '🫶', '😘', '💋', '🎂', '🎉', '🌟', '💎', '🌸', '🦋', '⭐', '💫'];
   const container = document.getElementById('emoji-quick');
   if (!container) return;
   
@@ -1387,7 +1259,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   checkAndLoadChat();
   updateCounterDisplay();
   initCreator();
-  initCopyLink();
   loadTemplates();
   initScrollAnimations();
   initEmojiPicker();
@@ -1407,14 +1278,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   animateCounter();
 });
 
-// Add CSS for new elements
+// Add CSS
 const styleSheet = document.createElement('style');
 styleSheet.textContent = `
-  @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    20%, 60% { transform: translateX(-6px); }
-    40%, 80% { transform: translateX(6px); }
-  }
   @keyframes fade-up {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
@@ -1510,7 +1376,6 @@ styleSheet.textContent = `
     color: var(--text-muted);
   }
   
-  /* Scratch Card Styles */
   .scratch-message-container {
     text-align: center;
     padding: 10px;
@@ -1557,7 +1422,7 @@ styleSheet.textContent = `
     padding: 20px;
   }
   .scratch-message-reveal {
-    max-height: 300px;
+    max-height: 400px;
     overflow-y: auto;
   }
   .reveal-line {
@@ -1627,11 +1492,13 @@ styleSheet.textContent = `
     cursor: pointer;
     font-family: inherit;
   }
+  
+  #delivery-status {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+    text-align: center;
+  }
 `;
 document.head.appendChild(styleSheet);
-
-
-
-
-
-
