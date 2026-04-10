@@ -8,7 +8,11 @@
 // =====================
 // CONFIGURATION
 // =====================
-const WORKER_API_URL = 'https://your-worker.workers.dev'; // UPDATE AFTER DEPLOYING WORKER
+
+
+const WORKER_API_URL = 'https://anonymous-telegram-bot.voicedontdie.workers.dev';
+
+
 
 // =====================
 // EXPANDABLE TEASERS POOL - ADD AS MANY AS YOU WANT FOR EACH CATEGORY
@@ -502,6 +506,10 @@ async function sendAnonymousTelegramMessage(message, recipientTelegram, senderNa
   }
   
   try {
+    console.log('Sending to worker:', WORKER_API_URL);
+    console.log('Recipient:', recipientTelegram);
+    console.log('Message:', message.substring(0, 50));
+    
     const response = await fetch(`${WORKER_API_URL}/api/send`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -515,12 +523,15 @@ async function sendAnonymousTelegramMessage(message, recipientTelegram, senderNa
       })
     });
     
+    console.log('Response status:', response.status);
+    
     const result = await response.json();
+    console.log('Response result:', result);
     
     if (result.success) {
       if (statusDiv) {
         statusDiv.style.background = 'rgba(16,185,129,0.1)';
-        statusDiv.innerHTML = `✅ Message sent anonymously to @${recipientTelegram.replace('@', '')}! They can reply and you'll get it here.`;
+        statusDiv.innerHTML = `✅ Message sent anonymously to @${recipientTelegram.replace('@', '')}! They will receive a secret link.`;
       }
       showToast('✅ Message sent anonymously!');
       trackEvent('telegram_message_sent', { category: category });
@@ -540,11 +551,13 @@ async function sendAnonymousTelegramMessage(message, recipientTelegram, senderNa
     console.error('Send error:', error);
     if (statusDiv) {
       statusDiv.style.background = 'rgba(239,68,68,0.1)';
-      statusDiv.innerHTML = `❌ Failed to send: Make sure the recipient has started the bot.`;
+      statusDiv.innerHTML = `❌ Error: ${error.message}. Make sure the worker is deployed and the URL is correct.`;
     }
-    showToast('❌ Failed to send message', true);
+    showToast(`❌ Error: ${error.message}`, true);
   }
 }
+
+
 
 // =====================
 // COUNTER
@@ -1616,3 +1629,9 @@ styleSheet.textContent = `
   }
 `;
 document.head.appendChild(styleSheet);
+
+
+
+
+
+
