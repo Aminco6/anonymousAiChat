@@ -1823,4 +1823,131 @@ footer a { color: var(--accent); text-decoration: none; }
 }
 
 
+/* Group Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(5px);
+}
 
+.modal-content {
+  background: var(--bg-card);
+  border-radius: 24px;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  border: 1px solid rgba(192,132,252,0.3);
+}
+
+.group-modal-icon {
+  font-size: 4rem;
+  margin-bottom: 16px;
+}
+
+.modal-content h3 {
+  font-size: 1.5rem;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, #c084fc, #818cf8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.modal-content p {
+  color: var(--subtext);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.group-join-btn {
+  display: inline-block;
+  background: linear-gradient(135deg, #c084fc, #818cf8);
+  color: white;
+  padding: 12px 24px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  margin: 8px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 12px 24px;
+  border-radius: 50px;
+  cursor: pointer;
+  margin: 8px;
+}
+
+.btn-secondary:hover {
+  border-color: #c084fc;
+  color: #c084fc;
+}
+
+.close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.close:hover {
+  color: var(--text);
+}
+
+.group-modal-note {
+  font-size: 0.7rem;
+  margin-top: 16px;
+  color: var(--muted);
+}
+
+/* Group Join Banner */
+.group-join-banner {
+  background: linear-gradient(135deg, rgba(192,132,252,0.15), rgba(129,140,248,0.1));
+  border: 1px solid rgba(192,132,252,0.3);
+  border-radius: 24px;
+  margin: 20px auto;
+  max-width: 600px;
+  padding: 4px;
+}
+
+.group-join-content {
+  background: var(--bg-card);
+  border-radius: 20px;
+  padding: 24px;
+  text-align: center;
+}
+
+.group-join-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+}
+
+.group-join-text h3 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+}
+
+.group-join-text p {
+  color: var(--subtext);
+  font-size: 0.85rem;
+  margin-bottom: 16px;
+}
+
+.group-join-note {
+  font-size: 0.7rem !important;
+  margin-top: 12px !important;
+}

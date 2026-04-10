@@ -1,7 +1,22 @@
 /* ===========================
    Anonymous Group Messenger
    script.js - With Validation & Security
+
+
+
+
+
    =========================== */
+
+window.alreadyJoinedGroup = alreadyJoinedGroup;
+window.confirmGroupJoin = confirmGroupJoin;
+window.closeGroupModal = closeGroupModal;
+window.showGroupJoinModal = showGroupJoinModal;
+window.resetGroupStatus = resetGroupStatus; // Optional, for testing
+
+
+
+
 
 'use strict';
 
@@ -313,6 +328,93 @@ function initCreator() {
     generateBtn.addEventListener('click', handleGenerate);
   }
 }
+
+
+
+function initCreator() {
+  if (messageInput) {
+    messageInput.addEventListener('input', () => {
+      let len = messageInput.value.length;
+      if (charCountEl) charCountEl.textContent = `${len}/${MAX_CHARS}`;
+      if (len > MAX_CHARS) {
+        messageInput.value = messageInput.value.slice(0, MAX_CHARS);
+      }
+    });
+  }
+
+  const generateBtn = document.getElementById('generate-btn');
+  if (generateBtn) {
+    generateBtn.removeEventListener('click', handleGenerate);
+    generateBtn.addEventListener('click', handleGenerate);
+  }
+  
+  // Check group status on page load (optional reminder)
+  if (!hasJoinedGroup()) {
+    // Show modal after 2 seconds, but don't force
+    setTimeout(() => {
+      if (!hasJoinedGroup()) {
+        showGroupJoinModal();
+      }
+    }, 2000);
+  }
+}
+
+
+
+
+// =====================
+// GROUP JOIN MANAGEMENT
+// =====================
+
+// Check if user has already confirmed joining
+function hasJoinedGroup() {
+  return localStorage.getItem('hasJoinedGroup') === 'true';
+}
+
+// Show group join modal if not joined
+function showGroupJoinModal() {
+  if (!hasJoinedGroup()) {
+    const modal = document.getElementById('group-join-modal');
+    if (modal) modal.style.display = 'flex';
+  }
+}
+
+// Close modal
+function closeGroupModal() {
+  const modal = document.getElementById('group-join-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+// User confirms they have joined
+function alreadyJoinedGroup() {
+  localStorage.setItem('hasJoinedGroup', 'true');
+  localStorage.setItem('groupJoinedDate', new Date().toISOString());
+  closeGroupModal();
+  showToast('✅ Thanks for confirming! You can now send anonymous messages.');
+}
+
+// User joins via link (call this when they click Join button)
+function confirmGroupJoin() {
+  // Open group link
+  window.open('https://t.me/+gRSBLQDiO0kyOTU0', '_blank');
+  // Don't auto-confirm - they need to click "I've Already Joined" after joining
+  closeGroupModal();
+  // Show a reminder
+  setTimeout(() => {
+    showToast('After joining the group, tap "I\'ve Already Joined" to start sending messages.');
+  }, 1000);
+}
+
+// Reset group join status (for testing - can remove in production)
+function resetGroupStatus() {
+  localStorage.removeItem('hasJoinedGroup');
+  localStorage.removeItem('groupJoinedDate');
+  showToast('Group status reset. You will be prompted to join again.');
+}
+
+
+
+
 
 // =====================
 // HANDLE GENERATE - FIXED VERSION
@@ -1374,3 +1476,19 @@ styleSheet.textContent = `
   .group-join-note { font-size: 0.75rem !important; color: var(--muted) !important; margin-top: 12px !important; }
 `;
 document.head.appendChild(styleSheet);
+
+
+// Show or hide group banner based on status
+function updateGroupBanner() {
+  const banner = document.getElementById('group-join-banner');
+  if (banner) {
+    if (!hasJoinedGroup()) {
+      banner.style.display = 'block';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+}
+
+// Call this in DOMContentLoaded
+updateGroupBanner();

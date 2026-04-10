@@ -1,6 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="telegram-web-app" content="true" />
+  
+  <script>
+    // BLOCK ALL WEB BROWSER ACCESS - ONLY ALLOW TELEGRAM
+    (function() {
+      // Check if in Telegram environment
+      const isTelegramWebApp = !!(window.Telegram && Telegram.WebApp);
+      const isTelegramUserAgent = /Telegram/i.test(navigator.userAgent);
+      const hasMessageId = window.location.search.includes('id=');
+      
+      // Allow if: in Telegram OR viewing a secret message
+      if (!isTelegramWebApp && !isTelegramUserAgent && !hasMessageId) {
+        // Redirect to Telegram bot
+        window.location.href = 'https://t.me/AnonymouseAiMessenger_bot';
+        return;
+      }
+      
+      // If in Telegram Web App, initialize it
+      if (window.Telegram && Telegram.WebApp) {
+        Telegram.WebApp.ready();
+        Telegram.WebApp.expand();
+        Telegram.WebApp.enableClosingConfirmation();
+      }
+    })();
+  </script>
+  
  
 
   <meta name="telegram-web-app" content="true" />
@@ -73,7 +101,7 @@
 
       <p>
         Create anonymous messages that reveal like a chat conversation.
-        Share via QR code or link — no account, no tracking, just vibes.
+        Remain anonymous, system do the rest— no account, no tracking, just vibes.
       </p>
 
       <div class="hero-btns">
@@ -96,13 +124,13 @@
         </div>
         <div class="preview-chat">
           <div class="preview-bubble">
-            Hey! 👋 Someone asked me to deliver something to you...
+            Hey! 👋 Someone anonymously just ask for a date tonight...
           </div>
           <div class="preview-typing">
             <span></span><span></span><span></span>
           </div>
           <div class="preview-bubble">
-            They said they really appreciate you 💜
+            He said he's really crushing on you 💜
           </div>
         </div>
       </div>
@@ -153,38 +181,42 @@
     
     
     <!-- ===== GROUP JOIN REQUIRED BANNER ===== -->
-<div class="group-join-banner">
-  <div class="group-join-content">
-    <div class="group-join-icon">👥</div>
-    <div class="group-join-text">
-      <h3>📢 Join Our Secret Messenger Group!</h3>
-      <p>To send and receive anonymous messages, you must join our Telegram group first.</p>
-      <a href="https://t.me/+gRSBLQDiO0kyOTU0" target="_blank" class="group-join-btn">
-        ✨ Join Group Now ✨
-      </a>
-      <p class="group-join-note">🔒 Your identity stays anonymous - No one knows who sent what!</p>
-    </div>
-  </div>
-</div>
-    
-    <!-- Group Join Modal -->
+<!-- Group Join Modal -->
 <div id="group-join-modal" class="modal" style="display:none;">
   <div class="modal-content group-modal">
-    <span class="close" onclick="document.getElementById('group-join-modal').style.display='none'">&times;</span>
+    <span class="close" onclick="closeGroupModal()">&times;</span>
     <div class="group-modal-icon">👥</div>
     <h3>Join Our Secret Messenger Group!</h3>
     <p>To send and receive anonymous messages, you must join our Telegram group first.</p>
     <a href="https://t.me/+gRSBLQDiO0kyOTU0" target="_blank" class="group-join-btn" onclick="confirmGroupJoin()">
       📱 Join Group Now
     </a>
-    <button class="btn-secondary" onclick="document.getElementById('group-join-modal').style.display='none'">
-      I've Already Joined
+    <button class="btn-secondary" onclick="alreadyJoinedGroup()">
+      ✅ I've Already Joined
     </button>
+    <p class="group-modal-note">🔒 Your identity stays anonymous</p>
   </div>
 </div>
-    
-    
-    
+
+
+
+ <div class="group-join-banner" id="group-join-banner" style="display: none;">
+  <div class="group-join-content">
+    <div class="group-join-icon">👥</div>
+    <div class="group-join-text">
+      <h3>📢 Join Our Secret Messenger Group!</h3>
+      <p>To send and receive anonymous messages, you must join our Telegram group first.</p>
+      <a href="https://t.me/+gRSBLQDiO0kyOTU0" target="_blank" class="group-join-btn">
+        📱 Join Group Now
+      </a>
+      <button class="btn-secondary" onclick="alreadyJoinedGroup()">
+        ✅ I've Already Joined
+      </button>
+      <p class="group-join-note">🔒 Your identity stays anonymous</p>
+    </div>
+  </div>
+</div>   
+
     
 
     <!-- ===========================
