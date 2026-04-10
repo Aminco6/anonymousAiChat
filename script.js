@@ -1581,9 +1581,177 @@ updateGroupBanner();
 
 
 
+// =====================
+// LOAD AVAILABLE GROUPS
+// =====================
+async function loadGroups() {
+  const groupSelect = document.getElementById('target-group');
+  if (!groupSelect) return;
+  
+  groupSelect.innerHTML = '<option value="">-- Loading groups... --</option>';
+  
+  try {
+    const response = await fetch(`${WORKER_API_URL}/api/groups`);
+    const result = await response.json();
+    
+    if (result.success && result.groups.length > 0) {
+      groupSelect.innerHTML = '<option value="">-- Select a group --</option>';
+      
+      for (const group of result.groups) {
+        const option = document.createElement('option');
+        option.value = group.id;
+        option.textContent = `${group.title} (${group.members || '?'} members)`;
+        groupSelect.appendChild(option);
+      }
+      
+      // Store the last selected group in localStorage
+      const lastGroup = localStorage.getItem('lastSelectedGroup');
+      if (lastGroup && result.groups.find(g => g.id === lastGroup)) {
+        groupSelect.value = lastGroup;
+      }
+    } else {
+      groupSelect.innerHTML = '<option value="">-- No groups found. Add bot to a group first! --</option>';
+    }
+  } catch (error) {
+    console.error('Error loading groups:', error);
+    groupSelect.innerHTML = '<option value="">-- Error loading groups --</option>';
+  }
+}
+
+// Save selected group
+function saveSelectedGroup() {
+  const groupSelect = document.getElementById('target-group');
+  if (groupSelect && groupSelect.value) {
+    localStorage.setItem('lastSelectedGroup', groupSelect.value);
+  }
+}
+
+// Update handleGenerate to include groupId
+function handleGenerate() {
+  // Check if user has joined the group (optional - remove if not needed)
+  const hasJoinedGroup = localStorage.getItem('hasJoinedGroup');
+  
+  if (!hasJoinedGroup) {
+    showToast('⚠️ Please join the Telegram group first to send messages!', true);
+    const modal = document.getElementById('group-join-modal');
+    if (modal) modal.style.display = 'flex';
+    return;
+  }
+  
+  let msg = (document.getElementById('msg-text')?.value || '').trim();
+  const recipient = (document.getElementById('telegram-recipient')?.value || '').trim();
+  const senderName = (document.getElementById('msg-from')?.value || '').trim();
+  const emoji = (document.getElementById('msg-emoji')?.value || '').trim();
+  const category = document.getElementById('msg-category')?.value || '';
+  const groupId = document.getElementById('target-group')?.value || '';
+  
+  // Validate group selection
+  if (!groupId) {
+    showToast('Please select a group from the dropdown', true);
+    return;
+  }
+  
+  // Save selected group
+  saveSelectedGroup();
+  
+  // Rest of your validation...
+  if (!msg) {
+    shakeElement(document.getElementById('msg-text'));
+    showToast('Please write a message', true);
+    return;
+  }
+  
+  if (msg.match(/https?:\/\/[^\s]+/g) || msg.match(/www\.[^\s]+/g)) {
+    shakeElement(document.getElementById('msg-text'));
+    showToast('URLs are not allowed in messages', true);
+    return;
+  }
+  
+  if (!recipient) {
+    shakeElement(document.getElementById('telegram-recipient'));
+    showToast('Please enter recipient\'s Telegram username', true);
+    return;
+  }
+  
+  let cleanRecipient = recipient.trim();
+  if (cleanRecipient.startsWith('@')) cleanRecipient = cleanRecipient.substring(1);
+  
+  if (!validateUsername(cleanRecipient)) {
+    shakeElement(document.getElementById('telegram-recipient'));
+    showToast('Invalid username: 5-32 characters (letters, numbers, underscore only)', true);
+    return;
+  }
+
+  // Send with groupId
+  createSecretMessage(msg, recipient, senderName, emoji, category, groupId);
+  incrementCount();
+}
+
+// Update createSecretMessage to accept groupId
+async function createSecretMessage(message, recipientTelegram, senderName, emoji, category, groupId) {
+  const statusDiv = document.getElementById('delivery-status');
+  
+  // ... validation code ...
+  
+  try {
+    const response = await fetch(`${WORKER_API_URL}/api/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: cleanMessage,
+        recipientTelegram: cleanRecipient,
+        senderName: cleanSender || 'Secret Admirer',
+        category: category || 'general',
+        emoji: emoji || '💌',
+        groupId: groupId  // Add this line
+      })
+    });
+    
+    // ... rest of the function
+  }
+}
 
 
 
+
+
+function handleGenerate() {
+  // REMOVE or COMMENT OUT this check:
+  // const hasJoinedGroup = localStorage.getItem('hasJoinedGroup');
+  // if (!hasJoinedGroup) {
+  //   showToast('⚠️ Please join the Telegram group first to send messages!', true);
+  //   const modal = document.getElementById('group-join-modal');
+  //   if (modal) modal.style.display = 'flex';
+  //   return;
+  // }
+  
+  // Your existing code continues here...
+  let msg = (document.getElementById('msg-text')?.value || '').trim();
+  const recipient = (document.getElementById('telegram-recipient')?.value || '').trim();
+  // ... rest of the function
+}
+
+
+//keeping main group as a requriements 
+
+//function handleGenerate() {
+  //let msg = (document.getElementById('msg-text')?.value || '').trim();
+  //const recipient = (document.getElementById('telegram-recipient')?.value || '').trim();
+ // const groupId = document.getElementById('target-group')?.value || '';
+  
+  // Only show join modal if user hasn't selected a group yet
+  //if (!groupId) {
+    //const hasJoinedGroup = localStorage.getItem('hasJoinedGroup');
+    //if (!hasJoinedGroup) {
+      //showToast('⚠️ Please join our Telegram group first or select a group from the dropdown!', true);
+      //const modal = document.getElementById('group-join-modal');
+      //if (modal) modal.style.display = 'flex';
+      //return;
+   // }
+  //}
+  
+  // ... rest of the function
+//}
 
 
 
