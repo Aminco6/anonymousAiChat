@@ -420,15 +420,21 @@ function resetGroupStatus() {
 // HANDLE GENERATE - FIXED VERSION
 // =====================
 function handleGenerate() {
-  // Check if user has joined the group
-  const hasJoinedGroup = localStorage.getItem('hasJoinedGroup');
+  // REMOVE or COMMENT OUT this check:
+  // const hasJoinedGroup = localStorage.getItem('hasJoinedGroup');
+  // if (!hasJoinedGroup) {
+  //   showToast('⚠️ Please join the Telegram group first to send messages!', true);
+  //   const modal = document.getElementById('group-join-modal');
+  //   if (modal) modal.style.display = 'flex';
+  //   return;
+  // }
   
-  if (!hasJoinedGroup) {
-    showToast('⚠️ Please join the Telegram group first to send messages!', true);
-    const modal = document.getElementById('group-join-modal');
-    if (modal) modal.style.display = 'flex';
-    return;
-  }
+  // Your existing code continues here...
+  let msg = (document.getElementById('msg-text')?.value || '').trim();
+  const recipient = (document.getElementById('telegram-recipient')?.value || '').trim();
+  // ... rest of the function
+}
+  
   
   let msg = (document.getElementById('msg-text')?.value || '').trim();
   const recipient = (document.getElementById('telegram-recipient')?.value || '').trim();
@@ -1715,21 +1721,7 @@ async function createSecretMessage(message, recipientTelegram, senderName, emoji
 
 
 
-function handleGenerate() {
-  // REMOVE or COMMENT OUT this check:
-  // const hasJoinedGroup = localStorage.getItem('hasJoinedGroup');
-  // if (!hasJoinedGroup) {
-  //   showToast('⚠️ Please join the Telegram group first to send messages!', true);
-  //   const modal = document.getElementById('group-join-modal');
-  //   if (modal) modal.style.display = 'flex';
-  //   return;
-  // }
-  
-  // Your existing code continues here...
-  let msg = (document.getElementById('msg-text')?.value || '').trim();
-  const recipient = (document.getElementById('telegram-recipient')?.value || '').trim();
-  // ... rest of the function
-}
+
 
 
 //keeping main group as a requriements 
