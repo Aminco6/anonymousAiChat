@@ -1300,6 +1300,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initScrollAnimations();
   initEmojiPicker();
   initCategoryDropdown();
+  initGroupDropdown();
   
   document.querySelectorAll('[data-scroll-creator]').forEach(btn => {
     btn.addEventListener('click', scrollToCreator);
@@ -1570,7 +1571,9 @@ styleSheet.textContent = `
 document.head.appendChild(styleSheet);
 
 
-// Show or hide group banner based on status
+// =====================
+// GROUP BANNER MANAGEMENT
+// =====================
 function updateGroupBanner() {
   const banner = document.getElementById('group-join-banner');
   if (banner) {
@@ -1582,11 +1585,6 @@ function updateGroupBanner() {
   }
 }
 
-// Call this in DOMContentLoaded
-updateGroupBanner();
-
-
-
 // =====================
 // LOAD AVAILABLE GROUPS
 // =====================
@@ -1597,20 +1595,29 @@ async function loadGroups() {
   groupSelect.innerHTML = '<option value="">-- Loading groups... --</option>';
   
   try {
+    console.log('Fetching groups from worker...');
     const response = await fetch(`${WORKER_API_URL}/api/groups`);
     const result = await response.json();
     
-    if (result.success && result.groups.length > 0) {
+    console.log('Groups response:', result);
+    
+    if (result.success && result.groups && result.groups.length > 0) {
       groupSelect.innerHTML = '<option value="">-- Select a group --</option>';
       
       for (const group of result.groups) {
         const option = document.createElement('option');
         option.value = group.id;
-        option.textContent = `${group.title} (${group.members || '?'} members)`;
+        option.textContent = group.title || 'Unnamed Group';
         groupSelect.appendChild(option);
       }
       
-      // Store the last selected group in localStorage
+      // Auto-select if only one group
+      if (result.groups.length === 1) {
+        groupSelect.value = result.groups[0].id;
+        console.log('Auto-selected group:', result.groups[0].title);
+      }
+      
+      // Or restore last selected group
       const lastGroup = localStorage.getItem('lastSelectedGroup');
       if (lastGroup && result.groups.find(g => g.id === lastGroup)) {
         groupSelect.value = lastGroup;
@@ -1632,50 +1639,110 @@ function saveSelectedGroup() {
   }
 }
 
-// Update handleGenerate to include groupId
-function handleGenerate() {
-  // Check if user has joined the group (optional - remove if not needed)
-  const hasJoinedGroup = localStorage.getItem('hasJoinedGroup');
+// =====================
+// CREATE SECRET MESSAGE (With groupId)
+// =====================
+async function createSecretMessage(message, recipientTelegram, senderName, emoji, category, groupId) {
+  const statusDiv = document.getElementById('delivery-status');
   
-  if (!hasJoinedGroup) {
-    showToast('⚠️ Please join the Telegram group first to send messages!', true);
-    const modal = document.getElementById('group-join-modal');
-    if (modal) modal.style.display = 'flex';
-    return;
+  // Clean recipient
+  let cleanRecipient = recipientTelegram.trim();
+  if (cleanRecipient.startsWith('@')) cleanRecipient = cleanRecipient.substring(1);
+  
+  // Clean message
+  const cleanMessage = sanitizeText(message);
+  
+  // Clean sender name (optional)
+  let cleanSender = '';
+  if (senderName && senderName.trim()) {
+    cleanSender = sanitizeText(senderName).substring(0, 30);
   }
   
+  if (statusDiv) {
+    statusDiv.style.display = 'block';
+    statusDiv.innerHTML = '📤 Sending your anonymous message...';
+    statusDiv.style.background = 'rgba(192,132,252,0.1)';
+  }
+  
+  try {
+    const response = await fetch(`${WORKER_API_URL}/api/send`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        message: cleanMessage,
+        recipientTelegram: cleanRecipient,
+        senderName: cleanSender || 'Secret Admirer',
+        category: category || 'general',
+        emoji: emoji || '💌',
+        groupId: groupId
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      if (statusDiv) {
+        statusDiv.style.background = 'rgba(16,185,129,0.1)';
+        statusDiv.innerHTML = `✅ Your anonymous message has been posted to the group!`;
+      }
+      showToast('✅ Message sent anonymously!');
+      
+      // Clear form
+      document.getElementById('msg-text').value = '';
+      document.getElementById('telegram-recipient').value = '';
+      document.getElementById('msg-from').value = '';
+      
+      setTimeout(() => {
+        if (statusDiv) statusDiv.style.display = 'none';
+      }, 5000);
+    } else {
+      throw new Error(result.error || 'Failed to send');
+    }
+  } catch (error) {
+    console.error('Create error:', error);
+    if (statusDiv) {
+      statusDiv.style.background = 'rgba(239,68,68,0.1)';
+      statusDiv.innerHTML = `❌ Failed: ${error.message}`;
+    }
+    showToast('❌ Failed to send message', true);
+  }
+}
+
+// =====================
+// HANDLE GENERATE - FIXED VERSION
+// =====================
+function handleGenerate() {
   let msg = (document.getElementById('msg-text')?.value || '').trim();
   const recipient = (document.getElementById('telegram-recipient')?.value || '').trim();
   const senderName = (document.getElementById('msg-from')?.value || '').trim();
   const emoji = (document.getElementById('msg-emoji')?.value || '').trim();
   const category = document.getElementById('msg-category')?.value || '';
   const groupId = document.getElementById('target-group')?.value || '';
-  
-  // Validate group selection
-  if (!groupId) {
-    showToast('Please select a group from the dropdown', true);
-    return;
-  }
-  
-  // Save selected group
-  saveSelectedGroup();
-  
-  // Rest of your validation...
+
+  // Validate message
   if (!msg) {
     shakeElement(document.getElementById('msg-text'));
     showToast('Please write a message', true);
     return;
   }
   
+  // Check for URLs in message
   if (msg.match(/https?:\/\/[^\s]+/g) || msg.match(/www\.[^\s]+/g)) {
     shakeElement(document.getElementById('msg-text'));
     showToast('URLs are not allowed in messages', true);
     return;
   }
   
+  // Validate recipient
   if (!recipient) {
     shakeElement(document.getElementById('telegram-recipient'));
     showToast('Please enter recipient\'s Telegram username', true);
+    return;
+  }
+  
+  // Validate group selection
+  if (!groupId) {
+    showToast('Please select a group from the dropdown', true);
     return;
   }
   
@@ -1688,65 +1755,30 @@ function handleGenerate() {
     return;
   }
 
-  // Send with groupId
+  // Save selected group for next time
+  saveSelectedGroup();
+  
+  // Send to group via worker
   createSecretMessage(msg, recipient, senderName, emoji, category, groupId);
   incrementCount();
 }
 
-// Update createSecretMessage to accept groupId
-async function createSecretMessage(message, recipientTelegram, senderName, emoji, category, groupId) {
-  const statusDiv = document.getElementById('delivery-status');
-  
-  // ... validation code ...
-  
-  try {
-    const response = await fetch(`${WORKER_API_URL}/api/send`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: cleanMessage,
-        recipientTelegram: cleanRecipient,
-        senderName: cleanSender || 'Secret Admirer',
-        category: category || 'general',
-        emoji: emoji || '💌',
-        groupId: groupId  // Add this line
-      })
-    });
-    
-    // ... rest of the function
-  }
+// =====================
+// REFRESH GROUPS BUTTON
+// =====================
+function refreshGroups() {
+  loadGroups();
+  showToast('🔄 Refreshing groups...');
 }
 
-
-
-
-
-
-
-
-//keeping main group as a requriements 
-
-//function handleGenerate() {
-  //let msg = (document.getElementById('msg-text')?.value || '').trim();
-  //const recipient = (document.getElementById('telegram-recipient')?.value || '').trim();
- // const groupId = document.getElementById('target-group')?.value || '';
-  
-  // Only show join modal if user hasn't selected a group yet
-  //if (!groupId) {
-    //const hasJoinedGroup = localStorage.getItem('hasJoinedGroup');
-    //if (!hasJoinedGroup) {
-      //showToast('⚠️ Please join our Telegram group first or select a group from the dropdown!', true);
-      //const modal = document.getElementById('group-join-modal');
-      //if (modal) modal.style.display = 'flex';
-      //return;
-   // }
-  //}
-  
-  // ... rest of the function
-//}
-
-
-
+// =====================
+// INITIALIZE GROUP DROPDOWN
+// =====================
+function initGroupDropdown() {
+  loadGroups();
+  // Refresh every 10 seconds
+  setInterval(loadGroups, 10000);
+}
 
 
 
