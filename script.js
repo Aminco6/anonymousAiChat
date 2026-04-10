@@ -629,3 +629,78 @@ styleSheet.textContent = `
   }
 `;
 document.head.appendChild(styleSheet);
+
+
+
+
+
+// Check for message ID in URL (when user clicks the secret link)
+function checkAndLoadChat() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const messageId = urlParams.get('id');
+  
+  if (messageId && !chatActive) {
+    chatActive = true;
+    loadSecretMessage(messageId).then(messageData => {
+      if (messageData) {
+        openChat({
+          msg: messageData.message,
+          from: messageData.senderName,
+          emoji: messageData.emoji,
+          category: messageData.category,
+          messageId: messageId
+        });
+      } else {
+        document.getElementById('chat-overlay').classList.add('active');
+        document.getElementById('chat-messages').innerHTML = `
+          <div style="text-align:center;padding:50px;">
+            <div style="font-size:3rem;">😢</div>
+            <h3>Message Not Found</h3>
+            <p>This secret message may have expired or been deleted.</p>
+            <button class="btn-primary" onclick="closeChat()">Go Back</button>
+          </div>
+        `;
+      }
+    });
+  }
+}
+
+async function loadSecretMessage(messageId) {
+  try {
+    const response = await fetch(`${WORKER_API_URL}/api/message?id=${messageId}`);
+    const result = await response.json();
+    
+    if (result.success) {
+      return result;
+    } else {
+      showToast('Message not found or expired', true);
+      return null;
+    }
+  } catch (error) {
+    console.error('Load error:', error);
+    return null;
+  }
+}
+
+
+
+async function sendReply(messageId, replyMessage, replierName) {
+  try {
+    const response = await fetch(`${WORKER_API_URL}/api/reply`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messageId: messageId,
+        replyMessage: replyMessage,
+        replierName: replierName || 'Someone'
+      })
+    });
+    
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Reply error:', error);
+    return { success: false, error: error.message };
+  }
+}
+
