@@ -1,121 +1,30 @@
-
-
 {
   "category": "Wedding",
   "icon": "💍",
   "messages": [
     {
-      "id": 1, 
-      "text": "Congratulations! May your love story be endless and beautiful. 📖💕", 
-      "qr_color": "#FFD700", 
+      "id": 1,
+      "text": "Congratulations! May your love story be endless and beautiful. 📖💕",
+      "qr_color": "#FFD700",
       "logo": "💍",
       "flow": [
-        "💍 Wedding bells are ringing in the distance...",
-        "📖 Someone has been following your love story...",
-        "💕 They think it's the most beautiful tale ever told...",
-        "🎊 Congratulations are in order...",
-        "💫 Here's their wedding wish for you... 💫"
+        "💍 Wedding bells! Someone has a special message for the happy couple...",
+        "💒 Love is in the air... a wedding message awaits...",
+        "🥂 A toast to love! Someone sent wedding wishes...",
+        "💫 Here's what they wanted to say... 💫"
       ]
     },
     {
-      "id": 2, 
-      "text": "Wishing you a lifetime of laughter and love. 💑", 
-      "qr_color": "#C0C0C0", 
+      "id": 2,
+      "text": "Wishing you a lifetime of laughter and love. 💑",
+      "qr_color": "#C0C0C0",
       "logo": "💒",
       "flow": [
         "💒 A beautiful wedding blessing is floating your way...",
         "😂 Someone wishes you a lifetime of laughter...",
         "💑 And a forever filled with love...",
-        "🎉 The celebration is just beginning...",
         "💫 Open this message for your blessing... 💫"
       ]
-    },
-    {
-      "id": 3, 
-      "text": "May your marriage be filled with all the right ingredients: love, laughter, and happiness. 🍰", 
-      "qr_color": "#FF69B4", 
-      "logo": "🍰",
-      "flow": [
-        "🍰 Someone's baking up the perfect marriage recipe...",
-        "❤️ The secret ingredients? Love...",
-        "😂 Laughter...",
-        "😊 And happiness...",
-        "💫 Here's their wedding wish recipe... 💫"
-      ]
-    },
-    {
-      "id": 4, 
-      "text": "Two hearts, one love. Congratulations on your wedding day! ❤️", 
-      "qr_color": "#FF0000", 
-      "logo": "❤️",
-      "flow": [
-        "❤️ Two hearts beating as one...",
-        "💑 Someone noticed how perfect you are together...",
-        "🎊 Your wedding day is finally here...",
-        "💝 They've been waiting to congratulate you...",
-        "💫 Open for your heartwarming message... 💫"
-      ]
-    },
-    {
-      "id": 5, 
-      "text": "May the love you share today grow stronger as you grow old together. 🌱", 
-      "qr_color": "#32CD32", 
-      "logo": "🌱",
-      "flow": [
-        "🌱 A tiny seed of love was planted...",
-        "💕 It's grown into something beautiful...",
-        "🌳 Someone watches your love grow every day...",
-        "🎋 They have a wish for your future together...",
-        "💫 Here's their growing love message... 💫"
-      ]
     }
-  ]
-}
-
-
-
-
-
-
-
-
-
-
-
-{
-  "category": "💍 Wedding",
-  "icon": "💍",
-  "teaser": "Beautiful wedding wishes for the happy couple",
-  "messages": [
-    {"id": 1, "text": "Congratulations! May your love story be endless and beautiful. 📖💕", "qr_color": "#FFD700", "logo": "💍"},
-    {"id": 2, "text": "Wishing you a lifetime of laughter and love. 💑", "qr_color": "#C0C0C0", "logo": "💒"},
-    {"id": 3, "text": "May your marriage be filled with all the right ingredients: love, laughter, and happiness. 🍰", "qr_color": "#FF69B4", "logo": "🍰"},
-    {"id": 4, "text": "Two hearts, one love. Congratulations on your wedding day! ❤️", "qr_color": "#FF0000", "logo": "❤️"},
-    {"id": 5, "text": "May the love you share today grow stronger as you grow old together. 🌱", "qr_color": "#32CD32", "logo": "🌱"},
-    {"id": 6, "text": "Congratulations! You've found your happily ever after. 👑", "qr_color": "#FFD700", "logo": "👑"},
-    {"id": 7, "text": "May your marriage be a beautiful dance of love and respect. 💃🕺", "qr_color": "#9370DB", "logo": "💃"},
-    {"id": 8, "text": "Wishing you joy, love, and happiness on your wedding day and always. 🎉", "qr_color": "#FF4500", "logo": "🎉"},
-    {"id": 9, "text": "Love is not about how many days you have been together, but how much you love each other every day. 📅❤️", "qr_color": "#1E90FF", "logo": "📅"},
-    {"id": 10, "text": "Congratulations! May your love be modern enough to survive the times and old-fashioned enough to last forever. ⏰", "qr_color": "#808080", "logo": "⏰"},
-    {"id": 11, "text": "May the bond you share today be the foundation of your forever. 🏠", "qr_color": "#8B4513", "logo": "🏠"},
-    {"id": 12, "text": "Here's to love, laughter, and your happily ever after! 🥂", "qr_color": "#FFD700", "logo": "🥂"},
-    {"id": 13, "text": "May your marriage be a source of endless joy and beautiful memories. 📸", "qr_color": "#FF69B4", "logo": "📸"},
-    {"id": 14, "text": "Congratulations on finding your partner in crime for life! 👮❤️", "qr_color": "#4169E1", "logo": "👮"},
-    {"id": 15, "text": "Wishing you a lifetime of shared sunsets and morning coffees. 🌅☕", "qr_color": "#FF7F50", "logo": "🌅"},
-    {"id": 16, "text": "May your love story inspire others to believe in true love. 📖✨", "qr_color": "#9400D3", "logo": "📖"},
-    {"id": 17, "text": "Congratulations! You've just leveled up to life's best adventure. 🎮", "qr_color": "#32CD32", "logo": "🎮"},
-    {"id": 18, "text": "May the love you share multiply with each passing day. 📈❤️", "qr_color": "#FF1493", "logo": "📈"},
-    {"id": 19, "text": "Wishing you both the wedding of your dreams and the marriage of a lifetime. 💭", "qr_color": "#00CED1", "logo": "💭"},
-    {"id": 20, "text": "Congratulations! Now the real fun begins! 🎊", "qr_color": "#FFA500", "logo": "🎊"},
-    {"id": 21, "text": "May your marriage be filled with more laughter than arguments. 😂", "qr_color": "#FFD700", "logo": "😂"},
-    {"id": 22, "text": "Here's to love, laughter, and not having to sleep alone anymore! 🛏️", "qr_color": "#C71585", "logo": "🛏️"},
-    {"id": 23, "text": "May your biggest fight be over the remote control. 📺", "qr_color": "#000000", "logo": "📺"},
-    {"id": 24, "text": "Congratulations! You've officially found your favorite person to annoy forever. 😜", "qr_color": "#FF6347", "logo": "😜"},
-    {"id": 25, "text": "Wishing you both a lifetime of Netflix and chill. 📺❄️", "qr_color": "#E50914", "logo": "📺"},
-    {"id": 26, "text": "May your love be as endless as your Netflix queue. 📺", "qr_color": "#B22222", "logo": "📺"},
-    {"id": 27, "text": "Congratulations! You've just won the lottery of love. 🎰❤️", "qr_color": "#FFD700", "logo": "🎰"},
-    {"id": 28, "text": "May your marriage be blessed with patience, understanding, and lots of pizza. 🍕", "qr_color": "#8B4513", "logo": "🍕"},
-    {"id": 29, "text": "Wishing you both the perfect blend of romance and friendship. 👫", "qr_color": "#FF69B4", "logo": "👫"},
-    {"id": 30, "text": "Congratulations! May your arguments be short and your makeups be long. 💋", "qr_color": "#FF1493", "logo": "💋"}
   ]
 }

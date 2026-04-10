@@ -3,9 +3,9 @@
   "icon": "🎂",
   "messages": [
     {
-      "id": 1, 
-      "text": "Happy Birthday! You're not getting older, you're getting sexier! 🔥", 
-      "qr_color": "#FF6B6B", 
+      "id": 1,
+      "text": "Happy Birthday! You're not getting older, you're getting sexier! 🔥",
+      "qr_color": "#FF6B6B",
       "logo": "🎂",
       "flow": [
         "🎂 Someone has a spicy birthday surprise just for you...",
@@ -16,9 +16,9 @@
       ]
     },
     {
-      "id": 2, 
-      "text": "Another year of being absolutely irresistible. Happy Birthday! 😘", 
-      "qr_color": "#FF8E53", 
+      "id": 2,
+      "text": "Another year of being absolutely irresistible. Happy Birthday! 😘",
+      "qr_color": "#FF8E53",
       "logo": "🎁",
       "flow": [
         "🎁 A mysterious birthday gift is waiting to be opened...",
@@ -27,151 +27,6 @@
         "🎈 Balloons and confetti... but the real surprise is inside...",
         "💫 Time to reveal your birthday message... 💫"
       ]
-    },
-    {
-      "id": 3, 
-      "text": "Warning: Birthday hugs may lead to spontaneous romance. Proceed with caution! ❤️", 
-      "qr_color": "#FF4757", 
-      "logo": "🤗",
-      "flow": [
-        "🤗 Someone wants to give you a birthday hug...",
-        "⚠️ But they're warning you... it might lead to romance...",
-        "❤️ They've been thinking about holding you close...",
-        "🎂 Birthday wishes with a little danger...",
-        "💫 Open if you're ready for the truth... 💫"
-      ]
-    },
-    {
-      "id": 4, 
-      "text": "Age is just a number, but your hotness is off the charts! 🔥 Happy Birthday!", 
-      "qr_color": "#FF6B6B", 
-      "logo": "📈",
-      "flow": [
-        "📈 Someone's been tracking your hotness level...",
-        "🔥 It's officially off the charts this year...",
-        "🎂 Age doesn't matter when you look this good...",
-        "💋 A very flirty birthday message is coming...",
-        "💫 Ready for the hottest birthday wish ever? 💫"
-      ]
-    },
-    {
-      "id": 5, 
-      "text": "Happy Birthday to someone who makes every day feel like Valentine's! 💝", 
-      "qr_color": "#FF1493", 
-      "logo": "💖",
-      "flow": [
-        "💝 Someone thinks every day with you is Valentine's Day...",
-        "💖 You make their heart flutter 365 days a year...",
-        "🎂 But today is EXTRA special...",
-        "💌 They've written you a birthday love note...",
-        "💫 Here's what your secret admirer said... 💫"
-      ]
-    },
-    {
-      "id": 6, 
-      "text": "You're the candles on my cake - you light up my life! 🕯️", 
-      "qr_color": "#FFD700", 
-      "logo": "🕯️",
-      "flow": [
-        "🕯️ Someone's life is brighter because of you...",
-        "✨ You light up every room you enter...",
-        "🎂 They compare you to birthday candles...",
-        "💛 A warm and fuzzy message is on its way...",
-        "💫 Time to light up your day with this message... 💫"
-      ]
-    },
-    {
-      "id": 7, 
-      "text": "Forget the candles, you're already hot enough! Happy Birthday! 🔥", 
-      "qr_color": "#FF4500", 
-      "logo": "🔥",
-      "flow": [
-        "🔥 No candles needed... you're already burning up...",
-        "🥵 Someone thinks you're sizzling hot...",
-        "🎂 Birthday heatwave incoming...",
-        "💋 A steamy birthday message is about to be revealed...",
-        "💫 Ready to feel the heat? 💫"
-      ]
-    },
-    {
-      "id": 8, 
-      "text": "Happy Birthday! Let's make a wish... that I'm your gift this year! 🎁😉", 
-      "qr_color": "#FF69B4", 
-      "logo": "💝",
-      "flow": [
-        "🎁 A gift-shaped message is waiting for you...",
-        "😉 Someone wants to be YOUR present...",
-        "🎂 Make a wish... they already made theirs about you...",
-        "💝 The best gift comes in a small package... this message...",
-        "💫 Unwrap your birthday surprise... 💫"
-      ]
-    },
-    {
-      "id": 9, 
-      "text": "Born to shine, and today you're blinding! Happy Birthday! ✨", 
-      "qr_color": "#FFD700", 
-      "logo": "✨",
-      "flow": [
-        "✨ A star was born on this day...",
-        "🌟 You've been shining bright ever since...",
-        "🎂 Today you're absolutely blinding...",
-        "💫 Someone's been watching your light from afar...",
-        "💫 Here's your birthday starlight message... 💫"
-      ]
-    },
-    {
-      "id": 10, 
-      "text": "Happy Birthday! You're like fine wine - getting better with age! 🍷", 
-      "qr_color": "#9B59B6", 
-      "logo": "🍷",
-      "flow": [
-        "🍷 Someone's been aging you like fine wine...",
-        "📈 And you just keep getting better...",
-        "🎂 Birthday sophistication incoming...",
-        "💝 A classy message from a secret admirer...",
-        "💫 Time to pour out the truth... 💫"
-      ]
     }
-  ]
-}
-
-
-
-
-{
-  "category": "Birthday",
-  "icon": "🎂",
-  "teaser": "Make their day special with flirty birthday surprises! 🎉",
-  "messages": [
-    {"id": 1, "text": "Happy Birthday! You're not getting older, you're getting sexier! 🔥", "qr_color": "#FF6B6B", "logo": "🎂"},
-    {"id": 2, "text": "Another year of being absolutely irresistible. Happy Birthday! 😘", "qr_color": "#FF8E53", "logo": "🎁"},
-    {"id": 3, "text": "Warning: Birthday hugs may lead to spontaneous romance. Proceed with caution! ❤️", "qr_color": "#FF4757", "logo": "🤗"},
-    {"id": 4, "text": "Age is just a number, but your hotness is off the charts! 🔥 Happy Birthday!", "qr_color": "#FF6B6B", "logo": "📈"},
-    {"id": 5, "text": "Happy Birthday to someone who makes every day feel like Valentine's! 💝", "qr_color": "#FF1493", "logo": "💖"},
-    {"id": 6, "text": "You're the candles on my cake - you light up my life! 🕯️", "qr_color": "#FFD700", "logo": "🕯️"},
-    {"id": 7, "text": "Forget the candles, you're already hot enough! Happy Birthday! 🔥", "qr_color": "#FF4500", "logo": "🔥"},
-    {"id": 8, "text": "Happy Birthday! Let's make a wish... that I'm your gift this year! 🎁😉", "qr_color": "#FF69B4", "logo": "💝"},
-    {"id": 9, "text": "Born to shine, and today you're blinding! Happy Birthday! ✨", "qr_color": "#FFD700", "logo": "✨"},
-    {"id": 10, "text": "Happy Birthday! You're like fine wine - getting better with age! 🍷", "qr_color": "#9B59B6", "logo": "🍷"},
-    {"id": 11, "text": "Another trip around the sun and you're still my favorite person! ☀️", "qr_color": "#F39C12", "logo": "☀️"},
-    {"id": 12, "text": "Happy Birthday! Today we celebrate the day the world got more beautiful! 🌍", "qr_color": "#27AE60", "logo": "🌍"},
-    {"id": 13, "text": "You don't look a day over fabulous! Happy Birthday! 💃", "qr_color": "#E91E63", "logo": "💃"},
-    {"id": 14, "text": "Happy Birthday! May your cake be sweet and your night be sweeter! 🍰", "qr_color": "#FF9800", "logo": "🍰"},
-    {"id": 15, "text": "Who needs presents when I have you? Happy Birthday to my greatest gift! 🎁", "qr_color": "#4CAF50", "logo": "🎀"},
-    {"id": 16, "text": "Happy Birthday! Let's party like it's your birthday... oh wait, it is! 🎉", "qr_color": "#FF5722", "logo": "🎊"},
-    {"id": 17, "text": "You're proof that perfection exists. Happy Birthday! 👑", "qr_color": "#FFD700", "logo": "👑"},
-    {"id": 18, "text": "Happy Birthday! Save a dance for me tonight! 💃🕺", "qr_color": "#9C27B0", "logo": "💃"},
-    {"id": 19, "text": "Another year, another reason to celebrate you! Happy Birthday! 🥳", "qr_color": "#00BCD4", "logo": "🥳"},
-    {"id": 20, "text": "Happy Birthday to the one who makes my heart skip beats! 💓", "qr_color": "#FF1744", "logo": "💓"},
-    {"id": 21, "text": "You're not old, you're vintage! Happy Birthday! 🍷", "qr_color": "#795548", "logo": "🍾"},
-    {"id": 22, "text": "Happy Birthday! May your smile stay as bright as your future! 🌟", "qr_color": "#FFC107", "logo": "🌟"},
-    {"id": 23, "text": "Forget the cake, I want a piece of your heart! Happy Birthday! 💗", "qr_color": "#FF4081", "logo": "🍰"},
-    {"id": 24, "text": "Happy Birthday! You're the reason birthdays are worth celebrating! 🎈", "qr_color": "#3F51B5", "logo": "🎈"},
-    {"id": 25, "text": "To the person who stole my heart - Happy Birthday! Now keep it! 💘", "qr_color": "#E91E63", "logo": "💘"},
-    {"id": 26, "text": "Happy Birthday! Let's make memories that last forever tonight! 📸", "qr_color": "#607D8B", "logo": "📸"},
-    {"id": 27, "text": "You're the icing on my cake of life! Happy Birthday! 🎂", "qr_color": "#FFB6C1", "logo": "🎂"},
-    {"id": 28, "text": "Happy Birthday! Age is merely the number of years the world has been blessed by you!", "qr_color": "#8BC34A", "logo": "🌍"},
-    {"id": 29, "text": "Let's blow out the candles and make a wish... for us! Happy Birthday! 🕯️", "qr_color": "#FF6600", "logo": "🕯️"},
-    {"id": 30, "text": "Happy Birthday to my favorite person to annoy for the rest of my life! 😘", "qr_color": "#FF3366", "logo": "😘"}
   ]
 }

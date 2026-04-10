@@ -509,12 +509,18 @@ const templateCategories = [
   { id: 'nigeria', name: '🇳🇬 Nigeria', icon: '🇳🇬', file: 'nigeria.json' }
 ];
 
+
+
+
+
+
+
 async function loadTemplates() {
   const grid = document.getElementById('templates-grid');
   if (!grid || isLoadingTemplates) return;
   
   isLoadingTemplates = true;
-  grid.innerHTML = '<div class="template-card" style="padding:40px;text-align:center;grid-column:1/-1;">Loading templates from all categories... ✨</div>';
+  grid.innerHTML = '<div class="template-card" style="padding:40px;text-align:center;grid-column:1/-1;">Loading templates... ✨</div>';
   
   try {
     allTemplates = [];
@@ -523,11 +529,20 @@ async function loadTemplates() {
       try {
         const response = await fetch(`./messages/${cat.file}`);
         if (response.ok) {
-          const categoryData = await response.json();
+          const text = await response.text();
+          // Try to parse JSON, handle errors
+          let categoryData;
+          try {
+            categoryData = JSON.parse(text);
+          } catch (parseError) {
+            console.error(`JSON parse error for ${cat.file}:`, parseError);
+            continue; // Skip this file
+          }
+          
           if (categoryData.messages && Array.isArray(categoryData.messages)) {
             const templatesFromCategory = categoryData.messages.map((msg, index) => ({
               id: `${cat.id}_${msg.id || index}`,
-              title: `${cat.icon} ${categoryData.category || cat.name}`,
+              title: `${cat.icon} ${categoryData.category || cat.name} ${index + 1}`,
               message: msg.text,
               emoji: msg.logo || cat.icon,
               from: "Secret Admirer",
@@ -536,7 +551,10 @@ async function loadTemplates() {
               original_text: msg.text
             }));
             allTemplates.push(...templatesFromCategory);
+            console.log(`Loaded ${templatesFromCategory.length} templates from ${cat.file}`);
           }
+        } else {
+          console.warn(`Failed to load ${cat.file}: HTTP ${response.status}`);
         }
       } catch (e) {
         console.warn(`Error loading ${cat.file}:`, e);
@@ -544,6 +562,7 @@ async function loadTemplates() {
     }
     
     if (allTemplates.length === 0) {
+      console.warn('No templates loaded from JSON, using fallback');
       allTemplates = getFallbackTemplates();
     }
     
@@ -560,6 +579,12 @@ async function loadTemplates() {
   
   isLoadingTemplates = false;
 }
+
+
+
+
+
+
 
 function getFallbackTemplates() {
   return [
@@ -840,6 +865,21 @@ async function showTyping(container, duration) {
   if (existing) existing.remove();
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function appendHtmlBubble(container, direction, html, avatarEmoji = '🤖') {
   const wrap = document.createElement('div');
   wrap.className = `msg-wrap ${direction}`;
@@ -864,24 +904,42 @@ function appendHtmlBubble(container, direction, html, avatarEmoji = '🤖') {
   container.appendChild(wrap);
   container.scrollTop = container.scrollHeight;
   
-  const scratchCanvas = wrap.querySelector('.scratch-canvas');
-  if (scratchCanvas) {
-    initScratchCard(scratchCanvas.id);
-  }
+  // Initialize scratch card after a short delay to ensure DOM is ready
+  setTimeout(() => {
+    const scratchCanvas = wrap.querySelector('.scratch-canvas');
+    if (scratchCanvas) {
+      console.log('Found scratch canvas, initializing...');
+      initScratchCard(scratchCanvas.id);
+    }
+  }, 100);
 }
 
+
+
+
+
+
+
 function createScratchCard(id) {
+  // Make sure ID is unique
+  const uniqueId = id + '_' + Date.now();
   return `
-    <div class="scratch-container" id="scratch-container-${id}">
+    <div class="scratch-container" id="scratch-container-${uniqueId}">
       <div class="scratch-label">✨ SCRATCH TO REVEAL ✨</div>
       <div class="scratch-area">
-        <canvas id="scratch-canvas-${id}" width="280" height="100" class="scratch-canvas"></canvas>
+        <canvas id="scratch-canvas-${uniqueId}" width="280" height="100" class="scratch-canvas"></canvas>
         <div class="scratch-overlay">← Scratch Here →</div>
       </div>
-      <div id="scratch-content-${id}" class="scratch-content" style="display: none;"></div>
+      <div id="scratch-content-${uniqueId}" class="scratch-content" style="display: none;"></div>
     </div>
   `;
 }
+
+
+
+
+
+
 
 function initScratchCard(canvasId) {
   const canvas = document.getElementById(canvasId);
@@ -960,6 +1018,13 @@ function initScratchCard(canvasId) {
   canvas.addEventListener('touchmove', (e) => { e.preventDefault(); scratch(e); });
 }
 
+
+
+
+
+
+
+
 async function startChatSequence(params) {
   const splash = document.getElementById('chat-splash');
   const messagesEl = document.getElementById('chat-messages');
@@ -1024,23 +1089,44 @@ async function startChatSequence(params) {
   
   await sleep(500);
   
-  await new Promise((resolve) => {
-    let resolved = false;
-    const checkInterval = setInterval(() => {
-      const contentDiv = document.getElementById(`scratch-content-${scratchId}`);
-      if (contentDiv && contentDiv.style.display === 'block' && !resolved) {
-        resolved = true;
-        clearInterval(checkInterval);
-        resolve();
+ 
+ 
+ 
+ 
+ 
+  // Wait for scratch completion with better detection
+await new Promise((resolve) => {
+  let resolved = false;
+  const targetId = `scratch-content-${scratchId}`;
+  
+  const checkInterval = setInterval(() => {
+    const contentDiv = document.getElementById(targetId);
+    if (contentDiv && contentDiv.style.display === 'block' && !resolved) {
+      console.log('Scratch completed!');
+      resolved = true;
+      clearInterval(checkInterval);
+      resolve();
+    }
+  }, 500);
+  
+  // Timeout after 60 seconds (longer for patience)
+  setTimeout(() => {
+    if (!resolved) {
+      console.log('Scratch timeout, forcing reveal');
+      clearInterval(checkInterval);
+      // Force reveal the content
+      const contentDiv = document.getElementById(targetId);
+      if (contentDiv) {
+        contentDiv.style.display = 'block';
       }
-    }, 500);
-    setTimeout(() => {
-      if (!resolved) {
-        clearInterval(checkInterval);
-        resolve();
-      }
-    }, 30000);
-  });
+      resolve();
+    }
+  }, 60000);
+});
+  
+  
+  
+  
   
   const contentDiv = document.getElementById(`scratch-content-${scratchId}`);
   if (contentDiv) {
@@ -1492,3 +1578,15 @@ function updateGroupBanner() {
 
 // Call this in DOMContentLoaded
 updateGroupBanner();
+
+
+
+
+
+
+
+
+
+
+
+
