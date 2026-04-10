@@ -1,6 +1,6 @@
 /* ===========================
-   Anonymous AI Messenger - FINAL VERSION
-   Telegram Web App Integration
+   Anonymous Group Messenger
+   script.js - Group Bot Version
    =========================== */
 
 'use strict';
@@ -10,23 +10,8 @@
 // =====================
 const WORKER_API_URL = 'https://anonymous-telegram-bot.voicedontdie.workers.dev';
 
-
-const WEBSITE_URL = 'https://anonymousmessenger.voddic.com.ng';
-
-
 // =====================
-// TELEGRAM WEB APP DETECTION
-// =====================
-let tg = null;
-if (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) {
-  tg = window.Telegram.WebApp;
-  tg.ready();
-  tg.expand();
-  console.log('✅ Running in Telegram Web App');
-}
-
-// =====================
-// EXPANDABLE TEASERS POOL
+// CATEGORY TEASERS
 // =====================
 const categoryTeasers = {
   birthday: {
@@ -37,12 +22,7 @@ const categoryTeasers = {
       "🎈 It's your birthday! Someone wants to make it unforgettable...",
       "🎁 A birthday surprise is waiting to be revealed...",
       "🕯️ Make a wish... someone made one for you...",
-      "🎉 Party time! Someone sent birthday love your way...",
-      "🎂 The candles are lit and someone's thinking of you...",
-      "💝 A birthday wish from a secret admirer is coming...",
-      "🌟 Today is your day and someone noticed...",
-      "🎀 A gift-shaped message is waiting to be opened...",
-      "🥳 Someone's celebrating YOU from afar..."
+      "🎉 Party time! Someone sent birthday love your way..."
     ]
   },
   love_romance: {
@@ -53,12 +33,7 @@ const categoryTeasers = {
       "💕 A secret admirer has been waiting to tell you something...",
       "🌹 Romance is in the air... someone has feelings for you...",
       "💖 Your biggest fan just left you a message...",
-      "😍 Someone can't stop thinking about you...",
-      "💗 A love letter in digital form is waiting...",
-      "🌸 Your secret admirer is ready to confess...",
-      "✨ Cupid's arrow has struck... someone sent you a message...",
-      "💓 Butterflies incoming... someone's thinking of you...",
-      "🌙 Under the moonlight, someone wrote you a message..."
+      "😍 Someone can't stop thinking about you..."
     ]
   },
   adult_humor: {
@@ -69,12 +44,7 @@ const categoryTeasers = {
       "😏 A naughty (but clean) message is waiting...",
       "💋 Someone's feeling bold today... ready to hear it?",
       "🍑 A flirty little secret is about to be revealed...",
-      "😉 Someone thinks you're hot... literally...",
-      "🌶️ Spicy vibes incoming... open if you dare...",
-      "💦 Someone's got a confession that might make you blush...",
-      "😈 A little devilish message is waiting for you...",
-      "🍒 Someone's feeling cheeky today...",
-      "🔥 Your secret admirer is feeling extra bold..."
+      "😉 Someone thinks you're hot... literally..."
     ]
   },
   flirty: {
@@ -85,12 +55,7 @@ const categoryTeasers = {
       "😘 A secret crush is ready to confess...",
       "💕 Flirty vibes incoming... are you ready?",
       "😏 Someone thinks you're cute... very cute...",
-      "💌 A little flirtation is heading your way...",
-      "💗 Someone's heart skipped a beat thinking about you...",
-      "🌸 You've been on someone's mind... in a flirty way...",
-      "✨ A little spark is about to fly...",
-      "💋 Pucker up? Someone has something cute to say...",
-      "😊 Someone's smiling just thinking about telling you this..."
+      "💌 A little flirtation is heading your way..."
     ]
   },
   wedding: {
@@ -100,13 +65,8 @@ const categoryTeasers = {
       "💍 Wedding bells! Someone has a special message for the happy couple...",
       "💒 Love is in the air... a wedding message awaits...",
       "🥂 A toast to love! Someone sent wedding wishes...",
-      "👰‍♀️🤵‍♂️ Congratulations are in order... open to see who's celebrating you...",
-      "💐 Someone's thinking of you on your special day...",
-      "💍 Forever starts here... someone has a message for you...",
-      "🥂 Raise your glass! Wedding wishes are coming...",
-      "💒 Someone's heart is full of joy for your union...",
-      "💐 A bouquet of blessings is waiting to be opened...",
-      "🎊 Congratulations! Someone wants to celebrate with you..."
+      "👰‍♀️🤵‍♂️ Congratulations are in order...",
+      "💐 Someone's thinking of you on your special day..."
     ]
   },
   relationship: {
@@ -115,14 +75,9 @@ const categoryTeasers = {
     teasers: [
       "🤝 Someone wants to make things right between you...",
       "💬 A heartfelt message about your relationship is waiting...",
-      "🙏 Someone's grateful for you... and they want you to know...",
-      "💪 Let's work on us... a message from someone who cares...",
-      "🫂 An apology or appreciation is coming your way...",
-      "💖 Someone values you more than words can say...",
-      "🤲 A peace offering in digital form awaits...",
-      "💬 Someone's been wanting to tell you something important...",
-      "🌟 You matter to someone... open to find out who...",
-      "💪 A message about us is waiting to be read..."
+      "🙏 Someone's grateful for you...",
+      "💪 Let's work on us...",
+      "🫂 An apology or appreciation is coming your way..."
     ]
   },
   sympathy: {
@@ -130,15 +85,10 @@ const categoryTeasers = {
     icon: "😢",
     teasers: [
       "😢 Someone's thinking of you during this difficult time...",
-      "🫂 A comforting message is waiting for you...",
-      "💪 You're not alone... someone wants you to know...",
-      "🌧️ Sending love and strength... open when you're ready...",
-      "🤗 A virtual hug is coming your way...",
-      "🕯️ Someone's lighting a candle and thinking of you...",
-      "💝 A gentle message of love and support awaits...",
-      "🌈 Brighter days are ahead... someone believes in you...",
-      "🤲 You're in someone's thoughts and prayers...",
-      "💪 You're stronger than you know... open for a reminder..."
+      "🫂 A comforting message is waiting...",
+      "💪 You're not alone...",
+      "🌧️ Sending love and strength...",
+      "🤗 A virtual hug is coming your way..."
     ]
   },
   fun: {
@@ -148,29 +98,19 @@ const categoryTeasers = {
       "😂 Someone's got a joke that'll make your day...",
       "🎉 Ready to laugh? A funny message awaits...",
       "🤪 Something silly is coming your way...",
-      "😜 Someone wants to prank you (in a good way)...",
-      "🃏 Get ready to smile... a fun surprise is here...",
-      "🎈 Laughter incoming! Open for a good time...",
-      "🤣 Someone's trying to make you LOL...",
-      "😹 This message might cause spontaneous giggling...",
-      "🎪 Step right up for a fun surprise!",
-      "🦄 Something magical and silly is waiting..."
+      "😜 Someone wants to prank you...",
+      "🃏 Get ready to smile..."
     ]
   },
   holidays: {
     name: "Holidays",
     icon: "🎄",
     teasers: [
-      "🎄 Ho ho ho! Someone sent holiday cheer just for you...",
-      "🎆 Happy celebrations! A holiday message is waiting...",
-      "🕎 Season's greetings... someone's thinking of you...",
-      "🥂 Cheers to the holidays! Open for a special message...",
+      "🎄 Ho ho ho! Someone sent holiday cheer...",
+      "🎆 Happy celebrations!",
+      "🥂 Cheers to the holidays!",
       "🎁 A holiday surprise is wrapped and ready...",
-      "🦃 Someone's thankful for you this season...",
-      "🎅 Santa's not the only one with a message for you...",
-      "✨ Holiday magic is in the air... and in this message...",
-      "🕯️ Someone's sending warm wishes your way...",
-      "🎊 Let the celebrations begin! A holiday greeting awaits..."
+      "✨ Holiday magic is in the air..."
     ]
   },
   islamic: {
@@ -178,15 +118,10 @@ const categoryTeasers = {
     icon: "🌙",
     teasers: [
       "🌙 Eid Mubarak! Someone's sending you blessings...",
-      "🕌 A special Islamic greeting is waiting for you...",
+      "🕌 A special Islamic greeting is waiting...",
       "🤲 Duas and love coming your way...",
-      "🌟 May Allah bless you... someone wants you to know...",
-      "📿 A spiritual message awaits...",
-      "🕋 Someone's praying for you and sent a message...",
-      "🌙 Moonlit blessings are being delivered...",
-      "🤲 Your name was mentioned in someone's dua...",
-      "✨ A message of peace and blessings awaits...",
-      "📖 Someone found a verse that reminded them of you..."
+      "🌟 May Allah bless you...",
+      "📿 A spiritual message awaits..."
     ]
   },
   nigeria: {
@@ -195,14 +130,9 @@ const categoryTeasers = {
     teasers: [
       "🇳🇬 Proudly Nigerian! Someone's celebrating with you...",
       "🦅 A message from the heart of Africa awaits...",
-      "🎉 Naija no dey carry last! Open for a special greeting...",
-      "💚🤍💚 Someone's thinking of you on this special day...",
-      "🥘 Jollof love coming your way...",
-      "🇳🇬 Green white green! Someone's got a message for you...",
-      "🦅 Soaring high like an eagle... open to see who's proud of you...",
-      "🎊 Naija vibes! Someone's sending love from home...",
-      "🍛 Suya and love? Someone's thinking of you...",
-      "💚 One Nigeria, one love... a message awaits..."
+      "🎉 Naija no dey carry last!",
+      "💚🤍💚 Someone's thinking of you...",
+      "🥘 Jollof love coming your way..."
     ]
   }
 };
@@ -272,18 +202,23 @@ function showToast(message, isError = false) {
 }
 
 // =====================
-// CREATE SECRET MESSAGE (Web App)
+// CREATE SECRET MESSAGE (Sends to Group)
 // =====================
-async function createSecretMessage(message, recipientTelegram, senderName, emoji, category, senderTelegram) {
+async function createSecretMessage(message, recipientTelegram, senderName, emoji, category) {
   const statusDiv = document.getElementById('delivery-status');
   
   if (statusDiv) {
     statusDiv.style.display = 'block';
-    statusDiv.innerHTML = '🔐 Creating your secret message...';
+    statusDiv.innerHTML = '📤 Sending your anonymous message to the group...';
+    statusDiv.style.background = 'rgba(192,132,252,0.1)';
   }
   
   try {
-    const response = await fetch(`${WORKER_API_URL}/api/create`, {
+    console.log('Sending to worker:', WORKER_API_URL);
+    console.log('Recipient:', recipientTelegram);
+    console.log('Message:', message.substring(0, 50));
+    
+    const response = await fetch(`${WORKER_API_URL}/api/send`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -291,19 +226,21 @@ async function createSecretMessage(message, recipientTelegram, senderName, emoji
         recipientTelegram: recipientTelegram,
         senderName: senderName || 'Secret Admirer',
         category: category || 'general',
-        emoji: emoji || '💌',
-        senderTelegram: senderTelegram || null
+        emoji: emoji || '💌'
       })
     });
     
+    console.log('Response status:', response.status);
+    
     const result = await response.json();
+    console.log('Response result:', result);
     
     if (result.success) {
       if (statusDiv) {
         statusDiv.style.background = 'rgba(16,185,129,0.1)';
-        statusDiv.innerHTML = `✅ Secret message sent to @${recipientTelegram.replace('@', '')}! They'll receive a button to tap and reveal.`;
+        statusDiv.innerHTML = `✅ Your anonymous message has been posted to the group for @${recipientTelegram.replace('@', '')}! They can reply anonymously.`;
       }
-      showToast('✅ Message sent anonymously!');
+      showToast('✅ Message sent to group!');
       
       // Clear form
       document.getElementById('msg-text').value = '';
@@ -313,10 +250,8 @@ async function createSecretMessage(message, recipientTelegram, senderName, emoji
       setTimeout(() => {
         if (statusDiv) statusDiv.style.display = 'none';
       }, 5000);
-      
-      return result;
     } else {
-      throw new Error(result.error);
+      throw new Error(result.error || 'Failed to send');
     }
   } catch (error) {
     console.error('Create error:', error);
@@ -325,12 +260,11 @@ async function createSecretMessage(message, recipientTelegram, senderName, emoji
       statusDiv.innerHTML = `❌ Failed: ${error.message}`;
     }
     showToast('❌ Failed to send message', true);
-    return null;
   }
 }
 
 // =====================
-// LOAD MESSAGE (when user clicks Web App button)
+// LOAD MESSAGE (for secret link - optional)
 // =====================
 async function loadSecretMessage(messageId) {
   try {
@@ -346,29 +280,6 @@ async function loadSecretMessage(messageId) {
   } catch (error) {
     console.error('Load error:', error);
     return null;
-  }
-}
-
-// =====================
-// SEND REPLY
-// =====================
-async function sendReply(messageId, replyMessage, replierTelegram) {
-  try {
-    const response = await fetch(`${WORKER_API_URL}/api/reply`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        messageId: messageId,
-        replyMessage: replyMessage,
-        replierTelegram: replierTelegram || null
-      })
-    });
-    
-    const result = await response.json();
-    return result;
-  } catch (error) {
-    console.error('Reply error:', error);
-    return { success: false, error: error.message };
   }
 }
 
@@ -397,6 +308,24 @@ function updateCounterDisplay() {
 // =====================
 // QR CODE GENERATION
 // =====================
+function generateQR(containerId, url, size = 180) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  container.innerHTML = '';
+  try {
+    new QRCode(container, {
+      text: url,
+      width: size,
+      height: size,
+      colorDark: '#000000',
+      colorLight: '#ffffff',
+      correctLevel: QRCode.CorrectLevel.M
+    });
+  } catch (e) {
+    console.error('QR generation error:', e);
+  }
+}
+
 function generateQRWithBackground(containerId, url, size = 180, category = 'default') {
   const container = document.getElementById(containerId);
   if (!container) return;
@@ -482,6 +411,7 @@ function initCreator() {
 
   const generateBtn = document.getElementById('generate-btn');
   if (generateBtn) {
+    generateBtn.removeEventListener('click', handleGenerate);
     generateBtn.addEventListener('click', handleGenerate);
   }
 }
@@ -492,7 +422,6 @@ function handleGenerate() {
   const senderName = (document.getElementById('msg-from')?.value || '').trim();
   const emoji = (document.getElementById('msg-emoji')?.value || '').trim();
   const category = document.getElementById('msg-category')?.value || '';
-  const senderTelegram = (document.getElementById('sender-telegram')?.value || '').trim();
 
   if (!msg) {
     shakeElement(document.getElementById('msg-text'));
@@ -506,8 +435,8 @@ function handleGenerate() {
     return;
   }
 
-  createSecretMessage(msg, recipient, senderName, emoji, category, senderTelegram);
-  trackEvent('message_created', { category: category || 'none' });
+  // Send to group via worker
+  createSecretMessage(msg, recipient, senderName, emoji, category);
   incrementCount();
 }
 
@@ -520,693 +449,45 @@ function shakeElement(el) {
 }
 
 // =====================
-// TEMPLATES
+// TEMPLATES (simplified)
 // =====================
-let currentTemplateCategory = 'all';
-let currentTemplatePage = 1;
-const TEMPLATES_PER_PAGE = 8;
-let allTemplates = [];
-
-const templateCategories = [
-  { id: 'birthday', name: '🎂 Birthday', icon: '🎂', file: 'birthday.json' },
-  { id: 'love_romance', name: '❤️ Love & Romance', icon: '❤️', file: 'love_romance.json' },
-  { id: 'adult_humor', name: '🔥 Adult Humor', icon: '🔥', file: 'adult_humor.json' },
-  { id: 'flirty', name: '💋 Flirty', icon: '💋', file: 'flirty.json' },
-  { id: 'wedding', name: '💍 Wedding', icon: '💍', file: 'wedding.json' },
-  { id: 'relationship', name: '🤝 Relationship', icon: '🤝', file: 'relationship.json' },
-  { id: 'sympathy', name: '😢 Sympathy', icon: '😢', file: 'sympathy.json' },
-  { id: 'fun', name: '😂 Fun', icon: '😂', file: 'fun.json' },
-  { id: 'holidays', name: '🎄 Holidays', icon: '🎄', file: 'holidays.json' },
-  { id: 'islamic', name: '🌙 Islamic', icon: '🌙', file: 'islamic.json' },
-  { id: 'nigeria', name: '🇳🇬 Nigeria', icon: '🇳🇬', file: 'nigeria.json' }
-];
-
 async function loadTemplates() {
   const grid = document.getElementById('templates-grid');
   if (!grid) return;
   
   grid.innerHTML = '<div class="template-card" style="padding:40px;text-align:center;">Loading templates... ✨</div>';
   
-  try {
-    allTemplates = [];
-    
-    for (const cat of templateCategories) {
-      try {
-        const response = await fetch(`./messages/${cat.file}`);
-        if (response.ok) {
-          const categoryData = await response.json();
-          if (categoryData.messages && Array.isArray(categoryData.messages)) {
-            const templatesFromCategory = categoryData.messages.map((msg, index) => ({
-              id: `${cat.id}_${msg.id || index}`,
-              title: `${cat.icon} ${categoryData.category || cat.name}`,
-              message: msg.text,
-              emoji: msg.logo || cat.icon,
-              from: "Secret Admirer",
-              category: cat.id,
-              original_text: msg.text
-            }));
-            allTemplates.push(...templatesFromCategory);
-          }
-        }
-      } catch (e) {
-        console.warn(`Error loading ${cat.file}:`, e);
-      }
-    }
-    
-    renderTemplateCategoryTabs();
-    renderTemplatesByCategory('all');
-    
-  } catch (error) {
-    console.error('Error loading templates:', error);
-    grid.innerHTML = '<div class="template-card" style="padding:40px;text-align:center;">Failed to load templates. Refresh page. 🔄</div>';
-  }
-}
-
-function renderTemplateCategoryTabs() {
-  const templatesSection = document.getElementById('templates');
-  const existingTabs = document.querySelector('.category-tabs');
-  if (existingTabs) existingTabs.remove();
-  
-  const categories = [
-    { id: 'all', name: '✨ All Categories', icon: '✨' },
-    ...templateCategories
+  // Use fallback templates for now
+  const templates = [
+    { id: 1, title: "🎂 Birthday Surprise", message: "Happy Birthday! Someone is thinking of you today! 🎂", emoji: "🎂", category: "birthday" },
+    { id: 2, title: "❤️ Secret Crush", message: "I've been wanting to tell you... you're amazing! ❤️", emoji: "❤️", category: "love_romance" },
+    { id: 3, title: "🔥 You're Hot", message: "Just saying... you're looking good today! 🔥", emoji: "🔥", category: "adult_humor" },
+    { id: 4, title: "💋 Flirty Vibes", message: "Hey there... someone thinks you're cute! 💋", emoji: "💋", category: "flirty" }
   ];
   
-  const tabsContainer = document.createElement('div');
-  tabsContainer.className = 'category-tabs';
-  tabsContainer.innerHTML = categories.map(cat => `
-    <button class="category-tab ${cat.id === currentTemplateCategory ? 'active' : ''}" data-category="${cat.id}">
-      ${cat.icon} ${cat.name}
-    </button>
-  `).join('');
-  
-  templatesSection.insertBefore(tabsContainer, document.getElementById('templates-grid'));
-  
-  document.querySelectorAll('.category-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      currentTemplateCategory = tab.dataset.category;
-      currentTemplatePage = 1;
-      renderTemplatesByCategory(currentTemplateCategory);
-    });
-  });
-}
-
-function renderTemplatesByCategory(category) {
-  const grid = document.getElementById('templates-grid');
-  if (!grid) return;
-  
-  let filteredTemplates = allTemplates;
-  if (category !== 'all') {
-    filteredTemplates = allTemplates.filter(t => t.category === category);
-  }
-  
-  if (filteredTemplates.length === 0) {
-    grid.innerHTML = `<div class="template-card" style="padding:40px;text-align:center;">No templates in this category yet.</div>`;
-    return;
-  }
-  
-  const startIndex = (currentTemplatePage - 1) * TEMPLATES_PER_PAGE;
-  const endIndex = startIndex + TEMPLATES_PER_PAGE;
-  const paginatedTemplates = filteredTemplates.slice(startIndex, endIndex);
-  const hasMore = endIndex < filteredTemplates.length;
-  const hasLess = currentTemplatePage > 1;
-  
-  renderTemplateCards(paginatedTemplates, grid);
-  updateTemplateLoadButtons(hasMore, hasLess, filteredTemplates.length, category);
-}
-
-function renderTemplateCards(templates, grid) {
-  grid.innerHTML = '';
-  
-  templates.forEach((tpl, i) => {
-    const messageText = tpl.original_text || tpl.message;
-    const params = { 
-      msg: messageText, 
-      from: tpl.from || "Secret Admirer", 
-      emoji: tpl.emoji,
-      category: tpl.category
-    };
-    const hash = '#' + encodeParams(params);
-    const url = window.location.origin + window.location.pathname + hash;
-
-    const card = document.createElement('div');
-    card.className = 'template-card';
-    card.style.animationDelay = `${i * 0.05}s`;
-
-    card.innerHTML = `
-      <div class="tooltip">${escapeHtml(messageText.slice(0, 80))}...</div>
-      <div class="template-qr" id="tpl-qr-${tpl.id.replace(/[^a-zA-Z0-9]/g, '_')}"></div>
+  grid.innerHTML = templates.map(tpl => `
+    <div class="template-card" onclick="useTemplate('${tpl.message}', '${tpl.emoji}', '${tpl.category}')">
       <div class="template-body">
-        <div class="template-title">${escapeHtml(tpl.title)}</div>
-        <div class="template-preview">${escapeHtml(messageText.substring(0, 100))}...</div>
-        <div class="template-buttons">
-          <button class="template-share-link-btn" data-url="${encodeURIComponent(url)}">
-            🔗 Copy Link
-          </button>
-        </div>
-      </div>
-    `;
-
-    grid.appendChild(card);
-
-    setTimeout(() => {
-      generateQRWithBackground(`tpl-qr-${tpl.id.replace(/[^a-zA-Z0-9]/g, '_')}`, url, 110, tpl.category);
-    }, i * 50);
-
-    const shareLinkBtn = card.querySelector('.template-share-link-btn');
-    if (shareLinkBtn) {
-      shareLinkBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const shareUrl = decodeURIComponent(shareLinkBtn.dataset.url);
-        copyToClipboard(shareUrl);
-        shareLinkBtn.textContent = '✅ Copied!';
-        setTimeout(() => {
-          shareLinkBtn.textContent = '🔗 Copy Link';
-        }, 2000);
-      });
-    }
-
-    card.addEventListener('click', (e) => {
-      if (!e.target.closest('.template-share-link-btn')) {
-        const shareUrl = decodeURIComponent(card.querySelector('.template-share-link-btn').dataset.url);
-        window.location.href = shareUrl;
-      }
-    });
-  });
-}
-
-function updateTemplateLoadButtons(hasMore, hasLess, totalCount, category) {
-  const existingButtons = document.querySelector('.template-load-buttons');
-  if (existingButtons) existingButtons.remove();
-  
-  if (!hasMore && !hasLess) return;
-  
-  const grid = document.getElementById('templates-grid');
-  const buttonsDiv = document.createElement('div');
-  buttonsDiv.className = 'template-load-buttons';
-  
-  buttonsDiv.innerHTML = `
-    ${hasLess ? '<button class="btn-load-less" id="template-load-less">⬆️ Load Less</button>' : ''}
-    ${hasMore ? '<button class="btn-load-more" id="template-load-more">Load More ⬇️</button>' : ''}
-    <span class="template-count">Showing ${Math.min(currentTemplatePage * TEMPLATES_PER_PAGE, totalCount)} of ${totalCount}</span>
-  `;
-  
-  grid.parentNode.insertBefore(buttonsDiv, grid.nextSibling);
-  
-  const loadMoreBtn = document.getElementById('template-load-more');
-  if (loadMoreBtn) {
-    loadMoreBtn.addEventListener('click', () => {
-      currentTemplatePage++;
-      renderTemplatesByCategory(currentTemplateCategory);
-      document.getElementById('templates').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }
-  
-  const loadLessBtn = document.getElementById('template-load-less');
-  if (loadLessBtn) {
-    loadLessBtn.addEventListener('click', () => {
-      currentTemplatePage--;
-      renderTemplatesByCategory(currentTemplateCategory);
-      document.getElementById('templates').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
-  }
-}
-
-// =====================
-// CHAT SEQUENCE
-// =====================
-let chatActive = false;
-
-function checkAndLoadChat() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const messageId = urlParams.get('id');
-  
-  if (messageId && !chatActive) {
-    chatActive = true;
-    loadSecretMessage(messageId).then(messageData => {
-      if (messageData) {
-        openChat({
-          msg: messageData.message,
-          from: messageData.senderName,
-          emoji: messageData.emoji,
-          category: messageData.category,
-          messageId: messageId
-        });
-      } else {
-        document.getElementById('chat-overlay').classList.add('active');
-        document.getElementById('chat-messages').innerHTML = `
-          <div style="text-align:center;padding:50px;">
-            <div style="font-size:3rem;">😢</div>
-            <h3>Message Not Found</h3>
-            <p>This secret message may have expired or been deleted.</p>
-            <button class="btn-primary" onclick="closeChat()">Go Back</button>
-          </div>
-        `;
-      }
-    });
-  }
-}
-
-function openChat(params) {
-  const overlay = document.getElementById('chat-overlay');
-  if (!overlay) return;
-  
-  overlay.classList.add('active');
-  document.body.style.overflow = 'hidden';
-  
-  const category = params.category || 'love_romance';
-  const avatarEmoji = params.emoji || getCategoryIcon(category);
-  const chatAvatarEl = overlay.querySelector('.chat-avatar');
-  if (chatAvatarEl) chatAvatarEl.textContent = avatarEmoji;
-  
-  const splashIcon = overlay.querySelector('.splash-icon');
-  if (splashIcon) splashIcon.textContent = avatarEmoji;
-  
-  startChatSequence(params);
-}
-
-function closeChat() {
-  const overlay = document.getElementById('chat-overlay');
-  if (overlay) overlay.classList.remove('active');
-  document.body.style.overflow = '';
-  chatActive = false;
-  if (tg) tg.close();
-  history.pushState('', document.title, window.location.pathname + window.location.search);
-}
-
-function splitMessageIntoLines(message) {
-  const sentences = message.split(/(?<=[.!?])\s+(?=[A-Za-z0-9])/);
-  const lines = [];
-  sentences.forEach(sentence => {
-    if (sentence.includes('\n')) {
-      lines.push(...sentence.split('\n'));
-    } else {
-      lines.push(sentence);
-    }
-  });
-  return lines.filter(line => line.trim().length > 0).map(line => line.trim());
-}
-
-function splitMessageIntoWordChunks(message, wordsPerChunk = 8) {
-  const words = message.split(/\s+/);
-  const chunks = [];
-  for (let i = 0; i < words.length; i += wordsPerChunk) {
-    chunks.push(words.slice(i, i + wordsPerChunk).join(' '));
-  }
-  return chunks;
-}
-
-function createMessageScratchCard(messageId) {
-  return `
-    <div class="scratch-message-container" id="scratch-container-${messageId}">
-      <div class="scratch-card-label">✨ SCRATCH TO REVEAL THE SECRET MESSAGE ✨</div>
-      <div class="scratch-area">
-        <canvas id="scratch-canvas-${messageId}" width="300" height="120" class="message-scratch-canvas"></canvas>
-        <div class="scratch-overlay-text">← Scratch Here →</div>
-      </div>
-      <div id="scratch-message-content-${messageId}" class="scratch-message-hidden" style="display: none;">
-        <div class="scratch-loading">✨ Preparing your message... ✨</div>
+        <div class="template-title">${tpl.title}</div>
+        <div class="template-preview">${tpl.message.substring(0, 80)}...</div>
       </div>
     </div>
-  `;
+  `).join('');
 }
 
-async function startChatSequence(params) {
-  const splash = document.getElementById('chat-splash');
-  const messagesEl = document.getElementById('chat-messages');
-  const category = params.category || 'love_romance';
-  const messageText = params.msg;
-  const messageLogo = params.emoji || getCategoryIcon(category);
-  const recipientName = params.recipient || 'there';
-  const senderName = params.from || null;
-  const messageId = params.messageId;
-  
-  if (!messagesEl) return;
-  
-  messagesEl.innerHTML = '';
-  
-  await sleep(3000);
-  
-  if (splash) {
-    splash.classList.add('hide');
-    await sleep(600);
-    splash.style.display = 'none';
-  }
-  
-  appendDateDivider(messagesEl, 'Today');
-  
-  // Time greeting
-  const hour = new Date().getHours();
-  let greeting = "Hello";
-  let greetingEmoji = "👋";
-  if (hour < 12) { greeting = "Good morning"; greetingEmoji = "🌅"; }
-  else if (hour < 17) { greeting = "Good afternoon"; greetingEmoji = "☀️"; }
-  else if (hour < 21) { greeting = "Good evening"; greetingEmoji = "🌆"; }
-  else { greeting = "Good night"; greetingEmoji = "🌙"; }
-  
-  await showTyping(messagesEl, 1200);
-  appendBubble(messagesEl, 'in', `${greetingEmoji} ${greeting}, ${recipientName}! ✨`, messageLogo);
-  await sleep(1500);
-  
-  // Random teasers
-  const randomTeasers = getRandomTeasers(category, 4);
-  for (let i = 0; i < randomTeasers.length; i++) {
-    await showTyping(messagesEl, 1200);
-    let teaserEmoji = messageLogo;
-    const emojiMatch = randomTeasers[i].match(/^([\u{1F300}-\u{1F9FF}])\s/iu);
-    if (emojiMatch) teaserEmoji = emojiMatch[1];
-    appendBubble(messagesEl, 'in', randomTeasers[i], teaserEmoji);
-    await sleep(2000 + Math.random() * 500);
-  }
-  
-  // Anticipation
-  await showTyping(messagesEl, 1000);
-  appendBubble(messagesEl, 'in', "💭 They've been waiting to share this with you...", "💭");
-  await sleep(1800);
-  
-  await showTyping(messagesEl, 800);
-  appendBubble(messagesEl, 'in', "⏰ The moment has arrived...", "⏰");
-  await sleep(1500);
-  
-  // Scratch card
-  await showTyping(messagesEl, 1200);
-  appendBubble(messagesEl, 'in', "✨ Their message is hidden below. Scratch to reveal it... ✨", "✨");
-  await sleep(1000);
-  
-  const scratchId = Date.now().toString();
-  const scratchHtml = createMessageScratchCard(scratchId);
-  appendHtmlBubble(messagesEl, 'in', scratchHtml, "🎫");
-  
-  await sleep(500);
-  
-  // Wait for scratch
-  await new Promise((resolve) => {
-    let resolved = false;
-    const checkInterval = setInterval(() => {
-      const contentDiv = document.getElementById(`scratch-message-content-${scratchId}`);
-      if (contentDiv && contentDiv.style.display === 'block' && !resolved) {
-        resolved = true;
-        clearInterval(checkInterval);
-        resolve();
-      }
-    }, 500);
-    setTimeout(() => {
-      if (!resolved) {
-        clearInterval(checkInterval);
-        resolve();
-      }
-    }, 30000);
-  });
-  
-  const contentDiv = document.getElementById(`scratch-message-content-${scratchId}`);
-  if (contentDiv) {
-    contentDiv.innerHTML = '<div class="scratch-loading">✨ Preparing your message... ✨</div>';
-    await sleep(800);
-    
-    contentDiv.innerHTML = '<div class="scratch-message-reveal" id="line-reveal-container"></div>';
-    const revealContainer = contentDiv.querySelector('.scratch-message-reveal');
-    
-    const lines = splitMessageIntoLines(messageText);
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      const lineDiv = document.createElement('div');
-      lineDiv.className = 'reveal-line';
-      lineDiv.style.opacity = '0';
-      lineDiv.style.transform = 'translateY(10px)';
-      lineDiv.style.transition = 'all 0.3s ease';
-      lineDiv.innerHTML = `<span class="reveal-emoji">${messageLogo}</span> <span class="reveal-text">${escapeHtml(line)}</span>`;
-      revealContainer.appendChild(lineDiv);
-      
-      setTimeout(() => {
-        lineDiv.style.opacity = '1';
-        lineDiv.style.transform = 'translateY(0)';
-      }, 100);
-      
-      const delay = Math.min(800 + line.length * 20, 2000);
-      await sleep(delay);
-    }
-  }
-  
-  await sleep(1000);
-  
-  // Sender reveal
-  if (senderName) {
-    await showTyping(messagesEl, 1000);
-    appendBubble(messagesEl, 'in', `— ${senderName} ${params.emoji || messageLogo}`, messageLogo);
-  } else {
-    await sleep(800);
-    const anonymousSenders = ["— Someone who cares", "— A secret admirer", "— Someone thinking of you"];
-    const randomSender = anonymousSenders[Math.floor(Math.random() * anonymousSenders.length)];
-    appendBubble(messagesEl, 'in', `${randomSender} ${params.emoji || '💌'}`, messageLogo);
-  }
-  
-  // Reply option
-  await sleep(1500);
-  
-  const replyCta = document.createElement('div');
-  replyCta.className = 'reveal-cta';
-  replyCta.innerHTML = `
-    <p>💝 Want to reply to your anonymous secret admirer? 💝</p>
-    <div class="reply-input-group" style="margin: 15px 0;">
-      <textarea id="reply-message" placeholder="Type your anonymous reply here..." rows="3" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px; color:var(--text); margin-bottom:10px;"></textarea>
-      <input type="text" id="reply-telegram" placeholder="Your Telegram (optional - to get reply back)" style="width:100%; background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px; color:var(--text); margin-bottom:10px;">
-      <button class="btn-primary" onclick="sendReplyToSender('${messageId}')">
-        ✨ Send Anonymous Reply
-      </button>
-    </div>
-    <hr style="border-color:var(--border); margin:15px 0;">
-    <p>Want to send your own secret message? 😏</p>
-    <button class="btn-primary" onclick="goToCreator()">
-      ✨ Create Your Message
-    </button>
-  `;
-  messagesEl.appendChild(replyCta);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-  
-  incrementCount();
-}
-
-async function sendReplyToSender(messageId) {
-  const replyMessage = document.getElementById('reply-message')?.value.trim();
-  const replierTelegram = document.getElementById('reply-telegram')?.value.trim();
-  
-  if (!replyMessage) {
-    showToast('Please write a reply', true);
-    return;
-  }
-  
-  showToast('📤 Sending anonymous reply...');
-  
-  const result = await sendReply(messageId, replyMessage, replierTelegram);
-  
-  if (result.success) {
-    showToast('✅ Reply sent anonymously!');
-    document.getElementById('reply-message').value = '';
-    document.getElementById('reply-telegram').value = '';
-    if (tg) tg.close();
-  } else {
-    showToast('❌ Failed to send reply', true);
-  }
-}
-
-function appendHtmlBubble(container, direction, html, avatarEmoji = '🤖') {
-  const wrap = document.createElement('div');
-  wrap.className = `msg-wrap ${direction}`;
-  
-  if (direction === 'in') {
-    wrap.innerHTML = `
-      <div class="msg-avatar-sm">${escapeHtml(avatarEmoji)}</div>
-      <div class="bubble in">
-        ${html}
-        <div class="time">${getTime()}</div>
-      </div>
-    `;
-  } else {
-    wrap.innerHTML = `
-      <div class="bubble out">
-        ${html}
-        <div class="time">${getTime()} ✓✓</div>
-      </div>
-    `;
-  }
-  
-  container.appendChild(wrap);
-  container.scrollTop = container.scrollHeight;
-  
-  const scratchCanvas = wrap.querySelector('.message-scratch-canvas');
-  if (scratchCanvas) {
-    initMessageScratchCard(scratchCanvas.id);
-  }
-}
-
-function initMessageScratchCard(canvasId) {
-  const canvas = document.getElementById(canvasId);
-  if (!canvas) return;
-  
-  const ctx = canvas.getContext('2d');
-  const container = canvas.closest('.scratch-message-container');
-  const contentDiv = container?.querySelector(`[id^="scratch-message-content"]`);
-  let isDragging = false;
-  let isRevealed = false;
-  let scratchedPixels = 0;
-  
-  ctx.fillStyle = '#888';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-  ctx.fillStyle = '#666';
-  for (let i = 0; i < 400; i++) {
-    ctx.fillRect(Math.random() * canvas.width, Math.random() * canvas.height, 2, 2);
-  }
-  
-  ctx.fillStyle = '#c084fc';
-  ctx.font = 'bold 14px Arial';
-  ctx.textAlign = 'center';
-  ctx.fillText('← SCRATCH HERE →', canvas.width/2, canvas.height/2);
-  
-  function getCoords(e) {
-    const rect = canvas.getBoundingClientRect();
-    const scaleX = canvas.width / rect.width;
-    const scaleY = canvas.height / rect.height;
-    
-    let clientX, clientY;
-    if (e.touches) {
-      clientX = e.touches[0].clientX;
-      clientY = e.touches[0].clientY;
-    } else {
-      clientX = e.clientX;
-      clientY = e.clientY;
-    }
-    
-    return {
-      x: Math.max(0, Math.min(canvas.width, (clientX - rect.left) * scaleX)),
-      y: Math.max(0, Math.min(canvas.height, (clientY - rect.top) * scaleY))
-    };
-  }
-  
-  function scratch(e) {
-    if (!isDragging || isRevealed) return;
-    e.preventDefault();
-    
-    const { x, y } = getCoords(e);
-    
-    ctx.globalCompositeOperation = 'destination-out';
-    ctx.beginPath();
-    ctx.arc(x, y, 15, 0, Math.PI * 2);
-    ctx.fill();
-    
-    scratchedPixels++;
-    
-    if (!isRevealed) {
-      const imageData = ctx.getImageData(canvas.width/2, canvas.height/2, 1, 1);
-      if (imageData.data[3] === 0 || scratchedPixels > 80) {
-        isRevealed = true;
-        canvas.style.display = 'none';
-        const overlayText = container?.querySelector('.scratch-overlay-text');
-        if (overlayText) overlayText.style.display = 'none';
-        
-        if (contentDiv) {
-          contentDiv.style.display = 'block';
-          contentDiv.innerHTML = '<div class="scratch-loading">✨ Revealing message... ✨</div>';
-        }
-      }
-    }
-  }
-  
-  canvas.addEventListener('mousedown', () => isDragging = true);
-  canvas.addEventListener('mouseup', () => isDragging = false);
-  canvas.addEventListener('mousemove', scratch);
-  canvas.addEventListener('touchstart', () => isDragging = true);
-  canvas.addEventListener('touchend', () => isDragging = false);
-  canvas.addEventListener('touchmove', (e) => { e.preventDefault(); scratch(e); });
-}
-
-function appendDateDivider(container, text) {
-  const div = document.createElement('div');
-  div.className = 'msg-date-divider';
-  div.textContent = text;
-  container.appendChild(div);
-}
-
-function appendBubble(container, direction, text, avatarEmoji, isMain = false) {
-  const wrap = document.createElement('div');
-  wrap.className = `msg-wrap ${direction}`;
-  const time = getTime();
-
-  if (direction === 'in') {
-    wrap.innerHTML = `
-      <div class="msg-avatar-sm">${escapeHtml(avatarEmoji || '🤖')}</div>
-      <div class="bubble in${isMain ? ' main-msg' : ''}">
-        ${escapeHtml(text)}
-        <div class="time">${time}</div>
-      </div>
-    `;
-  } else {
-    wrap.innerHTML = `
-      <div class="bubble out">
-        ${escapeHtml(text)}
-        <div class="time">${time} ✓✓</div>
-      </div>
-    `;
-  }
-  container.appendChild(wrap);
-  container.scrollTop = container.scrollHeight;
-}
-
-async function showTyping(container, duration) {
-  const wrap = document.createElement('div');
-  wrap.className = 'typing-indicator';
-  wrap.id = 'typing-wrap';
-  wrap.innerHTML = `
-    <div class="msg-avatar-sm">🤖</div>
-    <div class="typing-bubble">
-      <span></span><span></span><span></span>
-    </div>
-  `;
-  container.appendChild(wrap);
-  container.scrollTop = container.scrollHeight;
-  await sleep(duration);
-  const existing = document.getElementById('typing-wrap');
-  if (existing) existing.remove();
-}
-
-function escapeHtml(str) {
-  if (!str) return '';
-  return str
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/\n/g, '<br>');
-}
-
-function goToCreator() {
-  closeChat();
-  setTimeout(() => {
-    const creator = document.getElementById('creator');
-    if (creator) creator.scrollIntoView({ behavior: 'smooth' });
-  }, 300);
-}
-
-function encodeParams(data) {
-  return Object.entries(data)
-    .filter(([, v]) => v && String(v).trim())
-    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-    .join('&');
-}
-
-function trackEvent(eventName, params = {}) {
-  if (typeof gtag === 'function') {
-    gtag('event', eventName, params);
-  }
+function useTemplate(message, emoji, category) {
+  document.getElementById('msg-text').value = message;
+  document.getElementById('msg-emoji').value = emoji;
+  const categorySelect = document.getElementById('msg-category');
+  if (categorySelect) categorySelect.value = category;
+  showToast('Template loaded! Ready to send.');
 }
 
 // =====================
 // INITIALIZATION
 // =====================
 function initEmojiPicker() {
-  const emojis = ['💌', '💜', '❤️', '🔥', '👀', '🌹', '✨', '🥺', '😍', '🫶', '😘', '💋', '🎂', '🎉', '🌟', '💎', '🌸', '🦋', '⭐', '💫'];
+  const emojis = ['💌', '💜', '❤️', '🔥', '👀', '🌹', '✨', '🥺', '😍', '🫶', '😘', '💋', '🎂', '🎉', '🌟'];
   const container = document.getElementById('emoji-quick');
   if (!container) return;
   
@@ -1253,23 +534,19 @@ function animateCounter() {
   }, 20);
 }
 
+// Make functions global
+window.useTemplate = useTemplate;
+window.scrollToCreator = scrollToCreator;
+
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('DOM loaded, initializing app...');
+  console.log('DOM loaded, initializing Group Messenger...');
   
-  checkAndLoadChat();
   updateCounterDisplay();
   initCreator();
   loadTemplates();
   initScrollAnimations();
   initEmojiPicker();
   initCategoryDropdown();
-  
-  const backBtn = document.getElementById('chat-back');
-  if (backBtn) backBtn.addEventListener('click', closeChat);
-  
-  window.addEventListener('hashchange', () => {
-    if (!chatActive) checkAndLoadChat();
-  });
   
   document.querySelectorAll('[data-scroll-creator]').forEach(btn => {
     btn.addEventListener('click', scrollToCreator);
@@ -1285,9 +562,10 @@ styleSheet.textContent = `
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
   }
-  @keyframes scratchPulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(192,132,252,0.4); }
-    50% { box-shadow: 0 0 0 10px rgba(192,132,252,0); }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
   }
   
   .emoji-pick-btn {
@@ -1304,184 +582,41 @@ styleSheet.textContent = `
     transform: scale(1.15);
   }
   
-  .bubble.main-msg {
-    background: linear-gradient(135deg, #1e1e32, #2a1a3e);
-    border: 1px solid rgba(192,132,252,0.15);
-  }
-  
-  .template-buttons {
-    display: flex;
-    gap: 8px;
-    margin-top: 12px;
-  }
-  .template-share-link-btn {
-    flex: 1;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    cursor: pointer;
-    background: rgba(192,132,252,0.1);
-    border: 1px solid rgba(192,132,252,0.2);
-    color: #c084fc;
-    font-family: inherit;
-  }
-  .template-share-link-btn:hover {
-    background: rgba(192,132,252,0.2);
-  }
-  
-  .category-tabs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 24px;
-    justify-content: center;
-  }
-  .category-tab {
-    padding: 8px 16px;
-    background: var(--bg-card);
+  .template-card {
+    background: var(--card);
     border: 1px solid var(--border);
-    border-radius: 40px;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: inherit;
-    font-size: 0.85rem;
-    color: var(--text-secondary);
-  }
-  .category-tab.active {
-    background: linear-gradient(135deg, #c084fc, #818cf8);
-    color: white;
-    border-color: transparent;
-  }
-  
-  .template-load-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 32px;
-    align-items: center;
-    flex-wrap: wrap;
-  }
-  .btn-load-more, .btn-load-less {
-    background: linear-gradient(135deg, #c084fc, #818cf8);
-    color: white;
-    border: none;
-    padding: 10px 24px;
-    border-radius: 40px;
-    cursor: pointer;
-    font-weight: 600;
-  }
-  .template-count {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-  }
-  
-  .scratch-message-container {
-    text-align: center;
-    padding: 10px;
-  }
-  .scratch-card-label {
-    font-size: 0.8rem;
-    color: #c084fc;
-    margin-bottom: 10px;
-    font-weight: 500;
-  }
-  .scratch-area {
-    position: relative;
-    display: inline-block;
-  }
-  .message-scratch-canvas {
-    border-radius: 12px;
-    cursor: pointer;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    animation: scratchPulse 2s infinite;
-  }
-  .scratch-overlay-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 0.75rem;
-    color: white;
-    font-weight: bold;
-    text-shadow: 1px 1px 2px black;
-    pointer-events: none;
-    white-space: nowrap;
-  }
-  .scratch-message-hidden {
-    background: linear-gradient(135deg, #1e1e32, #2a1a3e);
     border-radius: 16px;
-    padding: 20px;
-    margin-top: 10px;
-    border: 1px solid rgba(192,132,252,0.3);
-    text-align: left;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.3s;
   }
-  .scratch-loading {
+  .template-card:hover {
+    transform: translateY(-4px);
+    border-color: #c084fc;
+  }
+  .template-title {
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .template-preview {
+    font-size: 0.8rem;
+    color: var(--subtext);
+  }
+  
+  .templates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 16px;
+  }
+  
+  #delivery-status {
+    margin-top: 16px;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 0.85rem;
     text-align: center;
-    color: #c084fc;
-    padding: 20px;
-  }
-  .scratch-message-reveal {
-    max-height: 400px;
-    overflow-y: auto;
-  }
-  .reveal-line {
-    margin-bottom: 12px;
-    padding: 6px 0;
-    border-bottom: 1px solid rgba(192,132,252,0.1);
-    display: flex;
-    gap: 10px;
-    align-items: flex-start;
-  }
-  .reveal-emoji {
-    font-size: 1.2rem;
-    min-width: 30px;
-  }
-  .reveal-text {
-    flex: 1;
-    line-height: 1.5;
-    color: var(--text-primary);
   }
   
-  .typing-indicator {
-    display: flex;
-    gap: 10px;
-    margin: 8px 0;
-  }
-  .typing-bubble {
-    background: var(--bg-secondary);
-    padding: 12px 16px;
-    border-radius: 18px;
-    border-bottom-left-radius: 4px;
-    display: flex;
-    gap: 4px;
-  }
-  .typing-bubble span {
-    width: 6px;
-    height: 6px;
-    background: var(--text-muted);
-    border-radius: 50%;
-    animation: typing 1.4s infinite;
-  }
-  .typing-bubble span:nth-child(2) { animation-delay: 0.2s; }
-  .typing-bubble span:nth-child(3) { animation-delay: 0.4s; }
-  
-  @keyframes typing {
-    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30% { transform: translateY(-6px); opacity: 1; }
-  }
-  
-  .reveal-cta {
-    background: linear-gradient(135deg, rgba(192,132,252,0.1), rgba(129,140,248,0.1));
-    border-radius: 20px;
-    padding: 1.5rem;
-    text-align: center;
-    margin-top: 1rem;
-    border: 1px solid rgba(192,132,252,0.2);
-  }
-  .reveal-cta p {
-    margin-bottom: 1rem;
-  }
   .btn-primary {
     background: linear-gradient(135deg, #c084fc, #818cf8);
     border: none;
@@ -1491,14 +626,6 @@ styleSheet.textContent = `
     font-weight: 600;
     cursor: pointer;
     font-family: inherit;
-  }
-  
-  #delivery-status {
-    margin-top: 16px;
-    padding: 12px;
-    border-radius: 12px;
-    font-size: 0.85rem;
-    text-align: center;
   }
 `;
 document.head.appendChild(styleSheet);
