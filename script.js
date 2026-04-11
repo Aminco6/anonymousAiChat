@@ -162,7 +162,7 @@ function resetGroupStatus() {
 // =====================
 let isLoadingGroups = false;
 let lastGroupLoadTime = 0;
-const GROUP_LOAD_COOLDOWN = 30000; // 30 seconds
+const GROUP_LOAD_COOLDOWN = 300000; // 5 minutes (300,000 milliseconds)
 
 async function loadGroups(force = false) {
   const groupSelect = document.getElementById('target-group');
@@ -222,10 +222,29 @@ async function loadGroups(force = false) {
   isLoadingGroups = false;
 }
 
+// Save selected group
+function saveSelectedGroup() {
+  const groupSelect = document.getElementById('target-group');
+  if (groupSelect && groupSelect.value) {
+    localStorage.setItem('lastSelectedGroup', groupSelect.value);
+  }
+}
+
+// Manual refresh (user clicks button)
+function refreshGroups() {
+  loadGroups(true);
+  showToast('🔄 Refreshing groups...');
+}
 
 
-
-
+// Initialize - load once, then refresh every 5 minutes
+function initGroupDropdown() {
+  loadGroups(true); // Load once on page load
+  // Refresh every 5 minutes
+  setInterval(() => {
+    loadGroups(false);
+  }, GROUP_LOAD_COOLDOWN);
+}
 
 
 // Save selected group (no auto-refresh)

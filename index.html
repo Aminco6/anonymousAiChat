@@ -191,14 +191,6 @@
 
 
 
-<div class="form-group">
-  <label for="target-group">📢 Select Group *</label>
-  <select id="target-group" class="input-field" required>
-    <option value="">-- Loading groups... --</option>
-  </select>
-  <small>Choose which Telegram group to post the anonymous message to</small>
-  <button type="button" onclick="refreshGroups()" style="background:none; border:none; color:#c084fc; cursor:pointer; font-size:0.7rem; margin-top:5px;">🔄 Refresh Groups</button>
-</div>
 
     
 
@@ -232,6 +224,48 @@
             <textarea id="msg-text" placeholder="Write what's in your heart... (e.g. 'I noticed your smile today and it made my whole day better ☀️')"></textarea>
             <div class="char-count"><span id="char-count">0</span>/400</div>
           </div>
+
+
+
+
+<!-- Telegram Recipient Field -->
+<div class="form-group">
+  <label for="telegram-recipient">📱 Recipient's Telegram Username *</label>
+  <input type="text" id="telegram-recipient" placeholder="@username" />
+  <small>The person you want to send the anonymous message to</small>
+</div>
+
+<!-- Group Selection - INSIDE THE FORM -->
+<div class="form-group">
+  <label for="target-group">📢 Select Group *</label>
+  <div style="display: flex; gap: 10px; align-items: center;">
+    <select id="target-group" class="input-field" style="flex: 1;" required>
+      <option value="">-- Loading groups... --</option>
+    </select>
+    <button type="button" onclick="refreshGroups()" style="background: linear-gradient(135deg, #c084fc, #818cf8); border: none; border-radius: 10px; padding: 12px 16px; color: white; cursor: pointer; font-size: 0.8rem; white-space: nowrap;">
+      🔄
+    </button>
+  </div>
+  <small>Choose which Telegram group to post the anonymous message to</small>
+</div>
+
+<!-- Sender Name (Optional) -->
+<div class="form-row">
+  <div class="form-group">
+    <label for="msg-from">Your Name (Optional - stays anonymous)</label>
+    <input type="text" id="msg-from" placeholder="e.g. Secret Admirer" maxlength="40" />
+    <small>This name will appear at the end of your message</small>
+  </div>
+  <div class="form-group">
+    <label for="msg-emoji">Vibe Emoji (optional)</label>
+    <input type="text" id="msg-emoji" placeholder="e.g. 💌" maxlength="4" />
+  </div>
+</div>
+
+
+
+
+
 
           <!-- Telegram Recipient Field - NEW -->
   <div class="form-group">
