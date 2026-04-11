@@ -1567,6 +1567,14 @@ document.head.appendChild(styleSheet);
 
 
 
+
+
+// At the very top of your script, after DOMContentLoaded
+function getMessageIdFromURL() {
+  const urlParams = new URLSearchParams(window.location.search);
+  return urlParams.get('id');
+}
+
 // Modified checkAndLoadChat
 function checkAndLoadChat() {
   const messageId = getMessageIdFromURL();
@@ -1603,6 +1611,7 @@ function checkAndLoadChat() {
     });
   }
 }
+
 
 
 
