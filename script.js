@@ -1,22 +1,7 @@
 /* ===========================
    Anonymous Group Messenger
-   script.js - With Validation & Security
-
-
-
-
-
+   script.js - Complete Fixed Version
    =========================== */
-
-window.alreadyJoinedGroup = alreadyJoinedGroup;
-window.confirmGroupJoin = confirmGroupJoin;
-window.closeGroupModal = closeGroupModal;
-window.showGroupJoinModal = showGroupJoinModal;
-window.resetGroupStatus = resetGroupStatus; // Optional, for testing
-
-
-
-
 
 'use strict';
 
@@ -133,9 +118,110 @@ function showToast(message, isError = false) {
 }
 
 // =====================
-// CREATE SECRET MESSAGE
+// GROUP JOIN MANAGEMENT
 // =====================
-async function createSecretMessage(message, recipientTelegram, senderName, emoji, category) {
+function hasJoinedGroup() {
+  return localStorage.getItem('hasJoinedGroup') === 'true';
+}
+
+function showGroupJoinModal() {
+  if (!hasJoinedGroup()) {
+    const modal = document.getElementById('group-join-modal');
+    if (modal) modal.style.display = 'flex';
+  }
+}
+
+function closeGroupModal() {
+  const modal = document.getElementById('group-join-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function alreadyJoinedGroup() {
+  localStorage.setItem('hasJoinedGroup', 'true');
+  localStorage.setItem('groupJoinedDate', new Date().toISOString());
+  closeGroupModal();
+  showToast('✅ Thanks for confirming! You can now send anonymous messages.');
+}
+
+function confirmGroupJoin() {
+  window.open('https://t.me/+gRSBLQDiO0kyOTU0', '_blank');
+  closeGroupModal();
+  setTimeout(() => {
+    showToast('After joining the group, tap "I\'ve Already Joined" to start sending messages.');
+  }, 1000);
+}
+
+function resetGroupStatus() {
+  localStorage.removeItem('hasJoinedGroup');
+  localStorage.removeItem('groupJoinedDate');
+  showToast('Group status reset.');
+}
+
+// =====================
+// LOAD AVAILABLE GROUPS
+// =====================
+async function loadGroups() {
+  const groupSelect = document.getElementById('target-group');
+  if (!groupSelect) return;
+  
+  groupSelect.innerHTML = '<option value="">-- Loading groups... --</option>';
+  
+  try {
+    console.log('Fetching groups from worker...');
+    const response = await fetch(`${WORKER_API_URL}/api/groups`);
+    const result = await response.json();
+    
+    console.log('Groups response:', result);
+    
+    if (result.success && result.groups && result.groups.length > 0) {
+      groupSelect.innerHTML = '<option value="">-- Select a group --</option>';
+      
+      for (const group of result.groups) {
+        const option = document.createElement('option');
+        option.value = group.id;
+        option.textContent = group.title || 'Unnamed Group';
+        groupSelect.appendChild(option);
+      }
+      
+      if (result.groups.length === 1) {
+        groupSelect.value = result.groups[0].id;
+        console.log('Auto-selected group:', result.groups[0].title);
+      }
+      
+      const lastGroup = localStorage.getItem('lastSelectedGroup');
+      if (lastGroup && result.groups.find(g => g.id === lastGroup)) {
+        groupSelect.value = lastGroup;
+      }
+    } else {
+      groupSelect.innerHTML = '<option value="">-- No groups found. Add bot to a group first! --</option>';
+    }
+  } catch (error) {
+    console.error('Error loading groups:', error);
+    groupSelect.innerHTML = '<option value="">-- Error loading groups --</option>';
+  }
+}
+
+function saveSelectedGroup() {
+  const groupSelect = document.getElementById('target-group');
+  if (groupSelect && groupSelect.value) {
+    localStorage.setItem('lastSelectedGroup', groupSelect.value);
+  }
+}
+
+function refreshGroups() {
+  loadGroups();
+  showToast('🔄 Refreshing groups...');
+}
+
+function initGroupDropdown() {
+  loadGroups();
+  setInterval(loadGroups, 10000);
+}
+
+// =====================
+// CREATE SECRET MESSAGE (With groupId)
+// =====================
+async function createSecretMessage(message, recipientTelegram, senderName, emoji, category, groupId) {
   const statusDiv = document.getElementById('delivery-status');
   
   if (!validateMessage(message)) {
@@ -170,7 +256,7 @@ async function createSecretMessage(message, recipientTelegram, senderName, emoji
   
   if (statusDiv) {
     statusDiv.style.display = 'block';
-    statusDiv.innerHTML = '📤 Sending your anonymous message to the group...';
+    statusDiv.innerHTML = '📤 Sending your anonymous message...';
     statusDiv.style.background = 'rgba(192,132,252,0.1)';
   }
   
@@ -183,7 +269,8 @@ async function createSecretMessage(message, recipientTelegram, senderName, emoji
         recipientTelegram: cleanRecipient,
         senderName: cleanSender || 'Secret Admirer',
         category: category || 'general',
-        emoji: emoji || '💌'
+        emoji: emoji || '💌',
+        groupId: groupId
       })
     });
     
@@ -192,12 +279,14 @@ async function createSecretMessage(message, recipientTelegram, senderName, emoji
     if (result.success) {
       if (statusDiv) {
         statusDiv.style.background = 'rgba(16,185,129,0.1)';
-        statusDiv.innerHTML = `✅ Your anonymous message has been posted to the group for @${cleanRecipient}!`;
+        statusDiv.innerHTML = `✅ Your anonymous message has been posted to the group!`;
       }
-      showToast('✅ Message sent to group!');
+      showToast('✅ Message sent anonymously!');
+      
       document.getElementById('msg-text').value = '';
       document.getElementById('telegram-recipient').value = '';
       document.getElementById('msg-from').value = '';
+      
       setTimeout(() => {
         if (statusDiv) statusDiv.style.display = 'none';
       }, 5000);
@@ -215,6 +304,54 @@ async function createSecretMessage(message, recipientTelegram, senderName, emoji
 }
 
 // =====================
+// HANDLE GENERATE
+// =====================
+function handleGenerate() {
+  let msg = (document.getElementById('msg-text')?.value || '').trim();
+  const recipient = (document.getElementById('telegram-recipient')?.value || '').trim();
+  const senderName = (document.getElementById('msg-from')?.value || '').trim();
+  const emoji = (document.getElementById('msg-emoji')?.value || '').trim();
+  const category = document.getElementById('msg-category')?.value || '';
+  const groupId = document.getElementById('target-group')?.value || '';
+
+  if (!msg) {
+    shakeElement(document.getElementById('msg-text'));
+    showToast('Please write a message', true);
+    return;
+  }
+  
+  if (msg.match(/https?:\/\/[^\s]+/g) || msg.match(/www\.[^\s]+/g)) {
+    shakeElement(document.getElementById('msg-text'));
+    showToast('URLs are not allowed in messages', true);
+    return;
+  }
+  
+  if (!recipient) {
+    shakeElement(document.getElementById('telegram-recipient'));
+    showToast('Please enter recipient\'s Telegram username', true);
+    return;
+  }
+  
+  if (!groupId) {
+    showToast('Please select a group from the dropdown', true);
+    return;
+  }
+  
+  let cleanRecipient = recipient.trim();
+  if (cleanRecipient.startsWith('@')) cleanRecipient = cleanRecipient.substring(1);
+  
+  if (!validateUsername(cleanRecipient)) {
+    shakeElement(document.getElementById('telegram-recipient'));
+    showToast('Invalid username: 5-32 characters (letters, numbers, underscore only)', true);
+    return;
+  }
+
+  saveSelectedGroup();
+  createSecretMessage(msg, recipient, senderName, emoji, category, groupId);
+  incrementCount();
+}
+
+// =====================
 // LOAD MESSAGE
 // =====================
 async function loadSecretMessage(messageId) {
@@ -224,7 +361,7 @@ async function loadSecretMessage(messageId) {
     if (result.success) {
       return result;
     } else {
-      showToast('Message not found or expired', true);
+      showToast('Message not found', true);
       return null;
     }
   } catch (error) {
@@ -292,7 +429,7 @@ function updateCounterDisplay() {
 }
 
 // =====================
-// MESSAGE CREATOR
+// MESSAGE CREATOR UI
 // =====================
 const messageInput = document.getElementById('msg-text');
 const charCountEl = document.getElementById('char-count');
@@ -327,156 +464,14 @@ function initCreator() {
     generateBtn.removeEventListener('click', handleGenerate);
     generateBtn.addEventListener('click', handleGenerate);
   }
-}
-
-
-
-function initCreator() {
-  if (messageInput) {
-    messageInput.addEventListener('input', () => {
-      let len = messageInput.value.length;
-      if (charCountEl) charCountEl.textContent = `${len}/${MAX_CHARS}`;
-      if (len > MAX_CHARS) {
-        messageInput.value = messageInput.value.slice(0, MAX_CHARS);
-      }
-    });
-  }
-
-  const generateBtn = document.getElementById('generate-btn');
-  if (generateBtn) {
-    generateBtn.removeEventListener('click', handleGenerate);
-    generateBtn.addEventListener('click', handleGenerate);
-  }
   
-  // Check group status on page load (optional reminder)
   if (!hasJoinedGroup()) {
-    // Show modal after 2 seconds, but don't force
     setTimeout(() => {
       if (!hasJoinedGroup()) {
         showGroupJoinModal();
       }
     }, 2000);
   }
-}
-
-
-
-
-// =====================
-// GROUP JOIN MANAGEMENT
-// =====================
-
-// Check if user has already confirmed joining
-function hasJoinedGroup() {
-  return localStorage.getItem('hasJoinedGroup') === 'true';
-}
-
-// Show group join modal if not joined
-function showGroupJoinModal() {
-  if (!hasJoinedGroup()) {
-    const modal = document.getElementById('group-join-modal');
-    if (modal) modal.style.display = 'flex';
-  }
-}
-
-// Close modal
-function closeGroupModal() {
-  const modal = document.getElementById('group-join-modal');
-  if (modal) modal.style.display = 'none';
-}
-
-// User confirms they have joined
-function alreadyJoinedGroup() {
-  localStorage.setItem('hasJoinedGroup', 'true');
-  localStorage.setItem('groupJoinedDate', new Date().toISOString());
-  closeGroupModal();
-  showToast('✅ Thanks for confirming! You can now send anonymous messages.');
-}
-
-// User joins via link (call this when they click Join button)
-function confirmGroupJoin() {
-  // Open group link
-  window.open('https://t.me/+gRSBLQDiO0kyOTU0', '_blank');
-  // Don't auto-confirm - they need to click "I've Already Joined" after joining
-  closeGroupModal();
-  // Show a reminder
-  setTimeout(() => {
-    showToast('After joining the group, tap "I\'ve Already Joined" to start sending messages.');
-  }, 1000);
-}
-
-// Reset group join status (for testing - can remove in production)
-function resetGroupStatus() {
-  localStorage.removeItem('hasJoinedGroup');
-  localStorage.removeItem('groupJoinedDate');
-  showToast('Group status reset. You will be prompted to join again.');
-}
-
-
-
-
-
-// =====================
-// HANDLE GENERATE - FIXED VERSION
-// =====================
-function handleGenerate() {
-  // REMOVE or COMMENT OUT this check:
-  // const hasJoinedGroup = localStorage.getItem('hasJoinedGroup');
-  // if (!hasJoinedGroup) {
-  //   showToast('⚠️ Please join the Telegram group first to send messages!', true);
-  //   const modal = document.getElementById('group-join-modal');
-  //   if (modal) modal.style.display = 'flex';
-  //   return;
-  // }
-  
-  // Your existing code continues here...
-  let msg = (document.getElementById('msg-text')?.value || '').trim();
-  const recipient = (document.getElementById('telegram-recipient')?.value || '').trim();
-  // ... rest of the function
-}
-  
-  
-  let msg = (document.getElementById('msg-text')?.value || '').trim();
-  const recipient = (document.getElementById('telegram-recipient')?.value || '').trim();
-  const senderName = (document.getElementById('msg-from')?.value || '').trim();
-  const emoji = (document.getElementById('msg-emoji')?.value || '').trim();
-  const category = document.getElementById('msg-category')?.value || '';
-
-  if (!msg) {
-    shakeElement(document.getElementById('msg-text'));
-    showToast('Please write a message', true);
-    return;
-  }
-  
-  if (msg.match(/https?:\/\/[^\s]+/g) || msg.match(/www\.[^\s]+/g)) {
-    shakeElement(document.getElementById('msg-text'));
-    showToast('URLs are not allowed in messages', true);
-    return;
-  }
-  
-  if (!recipient) {
-    shakeElement(document.getElementById('telegram-recipient'));
-    showToast('Please enter recipient\'s Telegram username', true);
-    return;
-  }
-  
-  let cleanRecipient = recipient.trim();
-  if (cleanRecipient.startsWith('@')) cleanRecipient = cleanRecipient.substring(1);
-  
-  if (!validateUsername(cleanRecipient)) {
-    shakeElement(document.getElementById('telegram-recipient'));
-    showToast('Invalid username: 5-32 characters (letters, numbers, underscore only)', true);
-    return;
-  }
-
-  createSecretMessage(msg, recipient, senderName, emoji, category);
-  incrementCount();
-}
-
-function confirmGroupJoin() {
-  localStorage.setItem('hasJoinedGroup', 'true');
-  document.getElementById('group-join-modal').style.display = 'none';
-  showToast('✅ Thanks for joining! Now you can send anonymous messages.');
 }
 
 function shakeElement(el) {
@@ -493,7 +488,7 @@ function escapeHtml(str) {
 }
 
 // =====================
-// TEMPLATES - LOAD FROM JSON FILES
+// TEMPLATES
 // =====================
 let currentTemplateCategory = 'all';
 let currentTemplatePage = 1;
@@ -515,12 +510,6 @@ const templateCategories = [
   { id: 'nigeria', name: '🇳🇬 Nigeria', icon: '🇳🇬', file: 'nigeria.json' }
 ];
 
-
-
-
-
-
-
 async function loadTemplates() {
   const grid = document.getElementById('templates-grid');
   if (!grid || isLoadingTemplates) return;
@@ -536,13 +525,12 @@ async function loadTemplates() {
         const response = await fetch(`./messages/${cat.file}`);
         if (response.ok) {
           const text = await response.text();
-          // Try to parse JSON, handle errors
           let categoryData;
           try {
             categoryData = JSON.parse(text);
           } catch (parseError) {
             console.error(`JSON parse error for ${cat.file}:`, parseError);
-            continue; // Skip this file
+            continue;
           }
           
           if (categoryData.messages && Array.isArray(categoryData.messages)) {
@@ -557,10 +545,7 @@ async function loadTemplates() {
               original_text: msg.text
             }));
             allTemplates.push(...templatesFromCategory);
-            console.log(`Loaded ${templatesFromCategory.length} templates from ${cat.file}`);
           }
-        } else {
-          console.warn(`Failed to load ${cat.file}: HTTP ${response.status}`);
         }
       } catch (e) {
         console.warn(`Error loading ${cat.file}:`, e);
@@ -568,7 +553,6 @@ async function loadTemplates() {
     }
     
     if (allTemplates.length === 0) {
-      console.warn('No templates loaded from JSON, using fallback');
       allTemplates = getFallbackTemplates();
     }
     
@@ -585,12 +569,6 @@ async function loadTemplates() {
   
   isLoadingTemplates = false;
 }
-
-
-
-
-
-
 
 function getFallbackTemplates() {
   return [
@@ -729,12 +707,28 @@ function updateTemplateLoadButtons(hasMore, hasLess, totalCount, category) {
   }
 }
 
+function updateGroupBanner() {
+  const banner = document.getElementById('group-join-banner');
+  if (banner) {
+    if (!hasJoinedGroup()) {
+      banner.style.display = 'block';
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+}
+
 // Make functions global
+window.alreadyJoinedGroup = alreadyJoinedGroup;
 window.confirmGroupJoin = confirmGroupJoin;
+window.closeGroupModal = closeGroupModal;
+window.showGroupJoinModal = showGroupJoinModal;
+window.resetGroupStatus = resetGroupStatus;
 window.useTemplate = useTemplate;
 window.sendReplyFromChat = sendReplyFromChat;
 window.closeChat = closeChat;
 window.goToCreator = goToCreator;
+window.refreshGroups = refreshGroups;
 
 // =====================
 // CHAT SEQUENCE FUNCTIONS
@@ -762,7 +756,6 @@ function checkAndLoadChat() {
           <div style="text-align:center;padding:50px;">
             <div style="font-size:3rem;">😢</div>
             <h3>Message Not Found</h3>
-            <p>This secret message may have expired or been deleted.</p>
             <button class="btn-primary" onclick="closeChat()">Go Back</button>
           </div>
         `;
@@ -871,21 +864,6 @@ async function showTyping(container, duration) {
   if (existing) existing.remove();
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function appendHtmlBubble(container, direction, html, avatarEmoji = '🤖') {
   const wrap = document.createElement('div');
   wrap.className = `msg-wrap ${direction}`;
@@ -910,24 +888,15 @@ function appendHtmlBubble(container, direction, html, avatarEmoji = '🤖') {
   container.appendChild(wrap);
   container.scrollTop = container.scrollHeight;
   
-  // Initialize scratch card after a short delay to ensure DOM is ready
   setTimeout(() => {
     const scratchCanvas = wrap.querySelector('.scratch-canvas');
     if (scratchCanvas) {
-      console.log('Found scratch canvas, initializing...');
       initScratchCard(scratchCanvas.id);
     }
   }, 100);
 }
 
-
-
-
-
-
-
 function createScratchCard(id) {
-  // Make sure ID is unique
   const uniqueId = id + '_' + Date.now();
   return `
     <div class="scratch-container" id="scratch-container-${uniqueId}">
@@ -940,12 +909,6 @@ function createScratchCard(id) {
     </div>
   `;
 }
-
-
-
-
-
-
 
 function initScratchCard(canvasId) {
   const canvas = document.getElementById(canvasId);
@@ -1024,13 +987,6 @@ function initScratchCard(canvasId) {
   canvas.addEventListener('touchmove', (e) => { e.preventDefault(); scratch(e); });
 }
 
-
-
-
-
-
-
-
 async function startChatSequence(params) {
   const splash = document.getElementById('chat-splash');
   const messagesEl = document.getElementById('chat-messages');
@@ -1095,44 +1051,30 @@ async function startChatSequence(params) {
   
   await sleep(500);
   
- 
- 
- 
- 
- 
-  // Wait for scratch completion with better detection
-await new Promise((resolve) => {
-  let resolved = false;
-  const targetId = `scratch-content-${scratchId}`;
-  
-  const checkInterval = setInterval(() => {
-    const contentDiv = document.getElementById(targetId);
-    if (contentDiv && contentDiv.style.display === 'block' && !resolved) {
-      console.log('Scratch completed!');
-      resolved = true;
-      clearInterval(checkInterval);
-      resolve();
-    }
-  }, 500);
-  
-  // Timeout after 60 seconds (longer for patience)
-  setTimeout(() => {
-    if (!resolved) {
-      console.log('Scratch timeout, forcing reveal');
-      clearInterval(checkInterval);
-      // Force reveal the content
+  await new Promise((resolve) => {
+    let resolved = false;
+    const targetId = `scratch-content-${scratchId}`;
+    
+    const checkInterval = setInterval(() => {
       const contentDiv = document.getElementById(targetId);
-      if (contentDiv) {
-        contentDiv.style.display = 'block';
+      if (contentDiv && contentDiv.style.display === 'block' && !resolved) {
+        resolved = true;
+        clearInterval(checkInterval);
+        resolve();
       }
-      resolve();
-    }
-  }, 60000);
-});
-  
-  
-  
-  
+    }, 500);
+    
+    setTimeout(() => {
+      if (!resolved) {
+        clearInterval(checkInterval);
+        const contentDiv = document.getElementById(targetId);
+        if (contentDiv) {
+          contentDiv.style.display = 'block';
+        }
+        resolve();
+      }
+    }, 60000);
+  });
   
   const contentDiv = document.getElementById(`scratch-content-${scratchId}`);
   if (contentDiv) {
@@ -1283,13 +1225,6 @@ function animateCounter() {
   }, 20);
 }
 
-// Make additional functions global
-window.sendReplyFromChat = sendReplyFromChat;
-window.closeChat = closeChat;
-window.goToCreator = goToCreator;
-window.useTemplate = useTemplate;
-window.confirmGroupJoin = confirmGroupJoin;
-
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('DOM loaded, initializing Group Messenger...');
   
@@ -1301,6 +1236,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   initEmojiPicker();
   initCategoryDropdown();
   initGroupDropdown();
+  updateGroupBanner();
   
   document.querySelectorAll('[data-scroll-creator]').forEach(btn => {
     btn.addEventListener('click', scrollToCreator);
@@ -1426,7 +1362,6 @@ styleSheet.textContent = `
     cursor: pointer;
   }
   
-  /* Scratch Card Styles */
   .scratch-container {
     text-align: center;
     padding: 10px;
@@ -1569,216 +1504,3 @@ styleSheet.textContent = `
   .group-join-note { font-size: 0.75rem !important; color: var(--muted) !important; margin-top: 12px !important; }
 `;
 document.head.appendChild(styleSheet);
-
-
-// =====================
-// GROUP BANNER MANAGEMENT
-// =====================
-function updateGroupBanner() {
-  const banner = document.getElementById('group-join-banner');
-  if (banner) {
-    if (!hasJoinedGroup()) {
-      banner.style.display = 'block';
-    } else {
-      banner.style.display = 'none';
-    }
-  }
-}
-
-// =====================
-// LOAD AVAILABLE GROUPS
-// =====================
-async function loadGroups() {
-  const groupSelect = document.getElementById('target-group');
-  if (!groupSelect) return;
-  
-  groupSelect.innerHTML = '<option value="">-- Loading groups... --</option>';
-  
-  try {
-    console.log('Fetching groups from worker...');
-    const response = await fetch(`${WORKER_API_URL}/api/groups`);
-    const result = await response.json();
-    
-    console.log('Groups response:', result);
-    
-    if (result.success && result.groups && result.groups.length > 0) {
-      groupSelect.innerHTML = '<option value="">-- Select a group --</option>';
-      
-      for (const group of result.groups) {
-        const option = document.createElement('option');
-        option.value = group.id;
-        option.textContent = group.title || 'Unnamed Group';
-        groupSelect.appendChild(option);
-      }
-      
-      // Auto-select if only one group
-      if (result.groups.length === 1) {
-        groupSelect.value = result.groups[0].id;
-        console.log('Auto-selected group:', result.groups[0].title);
-      }
-      
-      // Or restore last selected group
-      const lastGroup = localStorage.getItem('lastSelectedGroup');
-      if (lastGroup && result.groups.find(g => g.id === lastGroup)) {
-        groupSelect.value = lastGroup;
-      }
-    } else {
-      groupSelect.innerHTML = '<option value="">-- No groups found. Add bot to a group first! --</option>';
-    }
-  } catch (error) {
-    console.error('Error loading groups:', error);
-    groupSelect.innerHTML = '<option value="">-- Error loading groups --</option>';
-  }
-}
-
-// Save selected group
-function saveSelectedGroup() {
-  const groupSelect = document.getElementById('target-group');
-  if (groupSelect && groupSelect.value) {
-    localStorage.setItem('lastSelectedGroup', groupSelect.value);
-  }
-}
-
-// =====================
-// CREATE SECRET MESSAGE (With groupId)
-// =====================
-async function createSecretMessage(message, recipientTelegram, senderName, emoji, category, groupId) {
-  const statusDiv = document.getElementById('delivery-status');
-  
-  // Clean recipient
-  let cleanRecipient = recipientTelegram.trim();
-  if (cleanRecipient.startsWith('@')) cleanRecipient = cleanRecipient.substring(1);
-  
-  // Clean message
-  const cleanMessage = sanitizeText(message);
-  
-  // Clean sender name (optional)
-  let cleanSender = '';
-  if (senderName && senderName.trim()) {
-    cleanSender = sanitizeText(senderName).substring(0, 30);
-  }
-  
-  if (statusDiv) {
-    statusDiv.style.display = 'block';
-    statusDiv.innerHTML = '📤 Sending your anonymous message...';
-    statusDiv.style.background = 'rgba(192,132,252,0.1)';
-  }
-  
-  try {
-    const response = await fetch(`${WORKER_API_URL}/api/send`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        message: cleanMessage,
-        recipientTelegram: cleanRecipient,
-        senderName: cleanSender || 'Secret Admirer',
-        category: category || 'general',
-        emoji: emoji || '💌',
-        groupId: groupId
-      })
-    });
-    
-    const result = await response.json();
-    
-    if (result.success) {
-      if (statusDiv) {
-        statusDiv.style.background = 'rgba(16,185,129,0.1)';
-        statusDiv.innerHTML = `✅ Your anonymous message has been posted to the group!`;
-      }
-      showToast('✅ Message sent anonymously!');
-      
-      // Clear form
-      document.getElementById('msg-text').value = '';
-      document.getElementById('telegram-recipient').value = '';
-      document.getElementById('msg-from').value = '';
-      
-      setTimeout(() => {
-        if (statusDiv) statusDiv.style.display = 'none';
-      }, 5000);
-    } else {
-      throw new Error(result.error || 'Failed to send');
-    }
-  } catch (error) {
-    console.error('Create error:', error);
-    if (statusDiv) {
-      statusDiv.style.background = 'rgba(239,68,68,0.1)';
-      statusDiv.innerHTML = `❌ Failed: ${error.message}`;
-    }
-    showToast('❌ Failed to send message', true);
-  }
-}
-
-// =====================
-// HANDLE GENERATE - FIXED VERSION
-// =====================
-function handleGenerate() {
-  let msg = (document.getElementById('msg-text')?.value || '').trim();
-  const recipient = (document.getElementById('telegram-recipient')?.value || '').trim();
-  const senderName = (document.getElementById('msg-from')?.value || '').trim();
-  const emoji = (document.getElementById('msg-emoji')?.value || '').trim();
-  const category = document.getElementById('msg-category')?.value || '';
-  const groupId = document.getElementById('target-group')?.value || '';
-
-  // Validate message
-  if (!msg) {
-    shakeElement(document.getElementById('msg-text'));
-    showToast('Please write a message', true);
-    return;
-  }
-  
-  // Check for URLs in message
-  if (msg.match(/https?:\/\/[^\s]+/g) || msg.match(/www\.[^\s]+/g)) {
-    shakeElement(document.getElementById('msg-text'));
-    showToast('URLs are not allowed in messages', true);
-    return;
-  }
-  
-  // Validate recipient
-  if (!recipient) {
-    shakeElement(document.getElementById('telegram-recipient'));
-    showToast('Please enter recipient\'s Telegram username', true);
-    return;
-  }
-  
-  // Validate group selection
-  if (!groupId) {
-    showToast('Please select a group from the dropdown', true);
-    return;
-  }
-  
-  let cleanRecipient = recipient.trim();
-  if (cleanRecipient.startsWith('@')) cleanRecipient = cleanRecipient.substring(1);
-  
-  if (!validateUsername(cleanRecipient)) {
-    shakeElement(document.getElementById('telegram-recipient'));
-    showToast('Invalid username: 5-32 characters (letters, numbers, underscore only)', true);
-    return;
-  }
-
-  // Save selected group for next time
-  saveSelectedGroup();
-  
-  // Send to group via worker
-  createSecretMessage(msg, recipient, senderName, emoji, category, groupId);
-  incrementCount();
-}
-
-// =====================
-// REFRESH GROUPS BUTTON
-// =====================
-function refreshGroups() {
-  loadGroups();
-  showToast('🔄 Refreshing groups...');
-}
-
-// =====================
-// INITIALIZE GROUP DROPDOWN
-// =====================
-function initGroupDropdown() {
-  loadGroups();
-  // Refresh every 10 seconds
-  setInterval(loadGroups, 10000);
-}
-
-
-
