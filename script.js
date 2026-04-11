@@ -160,10 +160,25 @@ function resetGroupStatus() {
 // =====================
 // LOAD AVAILABLE GROUPS
 // =====================
-async function loadGroups() {
+let isLoadingGroups = false;
+let lastGroupLoadTime = 0;
+const GROUP_LOAD_COOLDOWN = 30000; // 30 seconds
+
+async function loadGroups(force = false) {
   const groupSelect = document.getElementById('target-group');
   if (!groupSelect) return;
   
+  // Prevent multiple simultaneous loads
+  if (isLoadingGroups) return;
+  
+  // Don't reload too frequently unless forced
+  const now = Date.now();
+  if (!force && (now - lastGroupLoadTime) < GROUP_LOAD_COOLDOWN && groupSelect.options.length > 1) {
+    console.log('Using cached groups, next refresh in:', Math.ceil((GROUP_LOAD_COOLDOWN - (now - lastGroupLoadTime))/1000), 'seconds');
+    return;
+  }
+  
+  isLoadingGroups = true;
   groupSelect.innerHTML = '<option value="">-- Loading groups... --</option>';
   
   try {
@@ -183,15 +198,19 @@ async function loadGroups() {
         groupSelect.appendChild(option);
       }
       
+      // Auto-select if only one group
       if (result.groups.length === 1) {
         groupSelect.value = result.groups[0].id;
         console.log('Auto-selected group:', result.groups[0].title);
       }
       
+      // Restore last selected group
       const lastGroup = localStorage.getItem('lastSelectedGroup');
       if (lastGroup && result.groups.find(g => g.id === lastGroup)) {
         groupSelect.value = lastGroup;
       }
+      
+      lastGroupLoadTime = Date.now();
     } else {
       groupSelect.innerHTML = '<option value="">-- No groups found. Add bot to a group first! --</option>';
     }
@@ -199,8 +218,17 @@ async function loadGroups() {
     console.error('Error loading groups:', error);
     groupSelect.innerHTML = '<option value="">-- Error loading groups --</option>';
   }
+  
+  isLoadingGroups = false;
 }
 
+
+
+
+
+
+
+// Save selected group (no auto-refresh)
 function saveSelectedGroup() {
   const groupSelect = document.getElementById('target-group');
   if (groupSelect && groupSelect.value) {
@@ -208,14 +236,16 @@ function saveSelectedGroup() {
   }
 }
 
+// Manual refresh (user clicks button)
 function refreshGroups() {
-  loadGroups();
+  loadGroups(true);
   showToast('🔄 Refreshing groups...');
 }
 
+// Initialize - load once, then only on manual refresh
 function initGroupDropdown() {
-  loadGroups();
-  setInterval(loadGroups, 10000);
+  loadGroups(true); // Load once on page load
+  // Remove the automatic interval refresh
 }
 
 // =====================
