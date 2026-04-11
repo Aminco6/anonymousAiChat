@@ -2,35 +2,7 @@
 <html lang="en">
 <head>
     
-   <meta name="monetag" content="ddd6b81379b34db066b0987098d25536">
-    
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <meta name="telegram-web-app" content="true" />
-  
-  <script>
-    // BLOCK ALL WEB BROWSER ACCESS - ONLY ALLOW TELEGRAM
-    (function() {
-      // Check if in Telegram environment
-      const isTelegramWebApp = !!(window.Telegram && Telegram.WebApp);
-      const isTelegramUserAgent = /Telegram/i.test(navigator.userAgent);
-      const hasMessageId = window.location.search.includes('id=');
-      
-      // Allow if: in Telegram OR viewing a secret message
-      if (!isTelegramWebApp && !isTelegramUserAgent && !hasMessageId) {
-        // Redirect to Telegram bot
-        window.location.href = 'https://t.me/AnonymouseAiMessenger_bot';
-        return;
-      }
-      
-      // If in Telegram Web App, initialize it
-      if (window.Telegram && Telegram.WebApp) {
-        Telegram.WebApp.ready();
-        Telegram.WebApp.expand();
-        Telegram.WebApp.enableClosingConfirmation();
-      }
-    })();
-  </script>
+
     
     
 
@@ -281,13 +253,7 @@
   <small>Choose which Telegram group to post the anonymous message to</small>
 </div>
 
-<div class="form-group">
-  <label>📢 Select Group *</label>
-  <div style="display: flex; gap: 10px;">
-    <select id="target-group" class="input-field" style="flex:1" required></select>
-    <button type="button" id="refresh-groups" style="background:#c084fc; border:none; border-radius:10px; padding:0 15px; cursor:pointer;">🔄</button>
-  </div>
-</div>
+
 
 
 
