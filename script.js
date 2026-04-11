@@ -788,6 +788,8 @@ function checkAndLoadChat() {
   const urlParams = new URLSearchParams(window.location.search);
   const messageId = urlParams.get('id');
   
+  console.log('Checking for message ID:', messageId);
+  
   if (messageId && !chatActive) {
     chatActive = true;
     loadSecretMessage(messageId).then(messageData => {
@@ -805,6 +807,7 @@ function checkAndLoadChat() {
           <div style="text-align:center;padding:50px;">
             <div style="font-size:3rem;">😢</div>
             <h3>Message Not Found</h3>
+            <p>This secret message may have expired or been deleted.</p>
             <button class="btn-primary" onclick="closeChat()">Go Back</button>
           </div>
         `;
@@ -812,6 +815,15 @@ function checkAndLoadChat() {
     });
   }
 }
+
+
+
+
+
+
+
+
+
 
 function openChat(params) {
   const overlay = document.getElementById('chat-overlay');
@@ -1553,3 +1565,6 @@ styleSheet.textContent = `
   .group-join-note { font-size: 0.75rem !important; color: var(--muted) !important; margin-top: 12px !important; }
 `;
 document.head.appendChild(styleSheet);
+
+
+
